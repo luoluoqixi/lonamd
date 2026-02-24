@@ -1,11 +1,11 @@
-name: re_editor
-description: Re-Editor is a powerful lightweight text and code editor widget.
+name: lonamd
+description: Flutter Markdown Editor Based on Re-Editor.
 version: 0.8.0
-homepage: https://reqable.com
-repository: https://github.com/reqable/re-editor
+homepage: https://github.com/luoluoqixi/lonamd
+repository: https://github.com/luoluoqixi/lonamd
 
 environment:
-  sdk: ">=2.17.3 <4.0.0"
+  sdk: '>=2.17.3 <4.0.0'
 
 dependencies:
   flutter:
