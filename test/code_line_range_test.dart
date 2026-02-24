@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:re_editor/re_editor.dart';
+import 'package:lonamd/lonamd.dart';
 
 void main() {
   group('CodeLineRange constructor ', () {
     test('`CodeLineRange()`', () {
-      const CodeLineRange range = CodeLineRange(
-        index: 1,
-        start: 2,
-        end: 3
-      );
+      const CodeLineRange range = CodeLineRange(index: 1, start: 2, end: 3);
       expect(range.index, 1);
       expect(range.start, 2);
       expect(range.end, 3);
@@ -17,22 +13,14 @@ void main() {
 
     test('`CodeLineRange.from()`', () {
       final CodeLineRange range = CodeLineRange.from(
-        index: 1,
-        range: const TextRange(
-          start: 2,
-          end: 3
-        )
-      );
+          index: 1, range: const TextRange(start: 2, end: 3));
       expect(range.index, 1);
       expect(range.start, 2);
       expect(range.end, 3);
     });
 
     test('`CodeLineRange.collapsed()`', () {
-      const CodeLineRange range = CodeLineRange.collapsed(
-        index: 1,
-        offset: 2
-      );
+      const CodeLineRange range = CodeLineRange.collapsed(index: 1, offset: 2);
       expect(range.index, 1);
       expect(range.start, 2);
       expect(range.end, 2);
@@ -48,42 +36,16 @@ void main() {
 
   group('CodeLineRange method ', () {
     test('`copyWith`', () {
-      const CodeLineRange range = CodeLineRange(
-        index: 1,
-        start: 2,
-        end: 3
-      );
+      const CodeLineRange range = CodeLineRange(index: 1, start: 2, end: 3);
       expect(range.copyWith(), range);
-      expect(range.copyWith(
-        index: 0
-      ), const CodeLineRange(
-        index: 0,
-        start: 2,
-        end: 3
-      ));
-      expect(range.copyWith(
-        start: 0
-      ), const CodeLineRange(
-        index: 1,
-        start: 0,
-        end: 3
-      ));
-      expect(range.copyWith(
-        end: 0
-      ), const CodeLineRange(
-        index: 1,
-        start: 2,
-        end: 0
-      ));
-      expect(range.copyWith(
-        index: 0,
-        start: 0,
-        end: 0
-      ), const CodeLineRange(
-        index: 0,
-        start: 0,
-        end: 0
-      ));
+      expect(range.copyWith(index: 0),
+          const CodeLineRange(index: 0, start: 2, end: 3));
+      expect(range.copyWith(start: 0),
+          const CodeLineRange(index: 1, start: 0, end: 3));
+      expect(range.copyWith(end: 0),
+          const CodeLineRange(index: 1, start: 2, end: 0));
+      expect(range.copyWith(index: 0, start: 0, end: 0),
+          const CodeLineRange(index: 0, start: 0, end: 0));
     });
   });
 
@@ -91,36 +53,16 @@ void main() {
     test('`==`', () {
       {
         final CodeLineRange range1 = CodeLineRange.from(
-          index: 1,
-          range: const TextRange(
-            start: 2,
-            end: 3
-          )
-        );
+            index: 1, range: const TextRange(start: 2, end: 3));
         final CodeLineRange range2 = CodeLineRange.from(
-          index: 1,
-          range: const TextRange(
-            start: 2,
-            end: 3
-          )
-        );
+            index: 1, range: const TextRange(start: 2, end: 3));
         expect(range1, range2);
       }
       {
         final CodeLineRange range1 = CodeLineRange.from(
-          index: 1,
-          range: const TextRange(
-            start: 2,
-            end: 3
-          )
-        );
+            index: 1, range: const TextRange(start: 2, end: 3));
         final CodeLineRange range2 = CodeLineRange.from(
-          index: 2,
-          range: const TextRange(
-            start: 2,
-            end: 3
-          )
-        );
+            index: 2, range: const TextRange(start: 2, end: 3));
         expect(range1 == range2, false);
       }
     });

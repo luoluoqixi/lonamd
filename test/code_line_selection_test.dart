@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:re_editor/re_editor.dart';
+import 'package:lonamd/lonamd.dart';
 
 void main() {
   group('CodeLineSelection constructor ', () {
     test('`CodeLineSelection()`', () {
       const CodeLineSelection selection = CodeLineSelection(
-        baseIndex: 1,
-        baseOffset: 2,
-        extentIndex: 3,
-        extentOffset: 4,
-        baseAffinity: TextAffinity.upstream
-      );
+          baseIndex: 1,
+          baseOffset: 2,
+          extentIndex: 3,
+          extentOffset: 4,
+          baseAffinity: TextAffinity.upstream);
       expect(selection.baseIndex, 1);
       expect(selection.baseOffset, 2);
       expect(selection.extentIndex, 3);
@@ -20,10 +19,7 @@ void main() {
     });
     test('`CodeLineSelection.collapsed()`', () {
       const CodeLineSelection selection = CodeLineSelection.collapsed(
-        index: 1,
-        offset: 2,
-        affinity: TextAffinity.upstream
-      );
+          index: 1, offset: 2, affinity: TextAffinity.upstream);
       expect(selection.baseIndex, 1);
       expect(selection.baseOffset, 2);
       expect(selection.extentIndex, 1);
@@ -32,12 +28,8 @@ void main() {
     });
     test('`CodeLineSelection.fromPosition()`', () {
       final CodeLineSelection selection = CodeLineSelection.fromPosition(
-        position: const CodeLinePosition(
-          index: 1,
-          offset: 2,
-          affinity: TextAffinity.upstream
-        )
-      );
+          position: const CodeLinePosition(
+              index: 1, offset: 2, affinity: TextAffinity.upstream));
       expect(selection.baseIndex, 1);
       expect(selection.baseOffset, 2);
       expect(selection.extentIndex, 1);
@@ -46,12 +38,7 @@ void main() {
     });
     test('`CodeLineSelection.fromRange()`', () {
       final CodeLineSelection selection = CodeLineSelection.fromRange(
-        range: const CodeLineRange(
-          index: 1,
-          start: 2,
-          end: 3
-        )
-      );
+          range: const CodeLineRange(index: 1, start: 2, end: 3));
       expect(selection.baseIndex, 1);
       expect(selection.baseOffset, 2);
       expect(selection.extentIndex, 1);
@@ -60,13 +47,9 @@ void main() {
     });
     test('`CodeLineSelection.fromTextSelection()`', () {
       final CodeLineSelection selection = CodeLineSelection.fromTextSelection(
-        index: 1,
-        selection: const TextSelection(
-          baseOffset: 2,
-          extentOffset: 3,
-          affinity: TextAffinity.upstream
-        )
-      );
+          index: 1,
+          selection: const TextSelection(
+              baseOffset: 2, extentOffset: 3, affinity: TextAffinity.upstream));
       expect(selection.baseIndex, 1);
       expect(selection.baseOffset, 2);
       expect(selection.extentIndex, 1);
@@ -93,11 +76,10 @@ void main() {
           extentIndex: 1,
           extentOffset: 1,
         );
-        expect(selection.base, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
       // Multi code line selected and base after extent
       {
@@ -107,11 +89,10 @@ void main() {
           baseIndex: 1,
           baseOffset: 1,
         );
-        expect(selection.base, const CodeLinePosition(
-          index: 1,
-          offset: 1,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 1, offset: 1, affinity: TextAffinity.downstream));
       }
       // Single code line selected and base before extent
       {
@@ -121,11 +102,10 @@ void main() {
           extentIndex: 0,
           extentOffset: 1,
         );
-        expect(selection.base, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
       // Single code line selected and base after extent
       {
@@ -135,37 +115,28 @@ void main() {
           baseIndex: 0,
           baseOffset: 1,
         );
-        expect(selection.base, const CodeLinePosition(
-          index: 0,
-          offset: 1,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 0, offset: 1, affinity: TextAffinity.downstream));
       }
       // collapsed and upstream
       {
         const CodeLineSelection selection = CodeLineSelection.collapsed(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.upstream
-        );
-        expect(selection.base, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.upstream
-        ));
+            index: 0, offset: 0, affinity: TextAffinity.upstream);
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.upstream));
       }
       // collapsed and downstream
       {
         const CodeLineSelection selection = CodeLineSelection.collapsed(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        );
-        expect(selection.base, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+            index: 0, offset: 0, affinity: TextAffinity.downstream);
+        expect(
+            selection.base,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
     });
 
@@ -178,11 +149,10 @@ void main() {
           extentIndex: 1,
           extentOffset: 1,
         );
-        expect(selection.extent, const CodeLinePosition(
-          index: 1,
-          offset: 1,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 1, offset: 1, affinity: TextAffinity.downstream));
       }
       // Multi code line selected and base after extent
       {
@@ -192,11 +162,10 @@ void main() {
           baseIndex: 1,
           baseOffset: 1,
         );
-        expect(selection.extent, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
       // Single code line selected and base before extent
       {
@@ -206,11 +175,10 @@ void main() {
           extentIndex: 0,
           extentOffset: 1,
         );
-        expect(selection.extent, const CodeLinePosition(
-          index: 0,
-          offset: 1,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 0, offset: 1, affinity: TextAffinity.downstream));
       }
       // Single code line selected and base after extent
       {
@@ -220,37 +188,28 @@ void main() {
           baseIndex: 0,
           baseOffset: 1,
         );
-        expect(selection.extent, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
       // collapsed and upstream
       {
         const CodeLineSelection selection = CodeLineSelection.collapsed(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.upstream
-        );
-        expect(selection.extent, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.upstream
-        ));
+            index: 0, offset: 0, affinity: TextAffinity.upstream);
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.upstream));
       }
       // collapsed and downstream
       {
         const CodeLineSelection selection = CodeLineSelection.collapsed(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        );
-        expect(selection.extent, const CodeLinePosition(
-          index: 0,
-          offset: 0,
-          affinity: TextAffinity.downstream
-        ));
+            index: 0, offset: 0, affinity: TextAffinity.downstream);
+        expect(
+            selection.extent,
+            const CodeLinePosition(
+                index: 0, offset: 0, affinity: TextAffinity.downstream));
       }
     });
 
@@ -507,15 +466,13 @@ void main() {
     test('`contains()`', () {
       // Collapsed
       {
-        const CodeLineSelection selection = CodeLineSelection.collapsed(
-          index: 0,
-          offset: 0
-        );
+        const CodeLineSelection selection =
+            CodeLineSelection.collapsed(index: 0, offset: 0);
         expect(selection.contains(selection), true);
-        expect(selection.contains(const CodeLineSelection.collapsed(
-          index: 0,
-          offset: 1
-        )), false);
+        expect(
+            selection.contains(
+                const CodeLineSelection.collapsed(index: 0, offset: 1)),
+            false);
       }
       // Single code line
       {
@@ -526,20 +483,18 @@ void main() {
           extentOffset: 3,
         );
         expect(selection.contains(selection), true);
-        expect(selection.contains(const CodeLineSelection.collapsed(
-          index: 0,
-          offset: 1
-        )), true);
-        expect(selection.contains(const CodeLineSelection.collapsed(
-          index: 0,
-          offset: 4
-        )), false);
-        expect(selection.contains(const CodeLineSelection(
-          baseIndex: 0,
-          baseOffset: 0,
-          extentIndex: 0,
-          extentOffset: 1
-        )), true);
+        expect(
+            selection.contains(
+                const CodeLineSelection.collapsed(index: 0, offset: 1)),
+            true);
+        expect(
+            selection.contains(
+                const CodeLineSelection.collapsed(index: 0, offset: 4)),
+            false);
+        expect(
+            selection.contains(const CodeLineSelection(
+                baseIndex: 0, baseOffset: 0, extentIndex: 0, extentOffset: 1)),
+            true);
       }
       // Multi code line
       {
@@ -550,32 +505,35 @@ void main() {
           extentOffset: 3,
         );
         expect(selection.contains(selection), true);
-        expect(selection.contains(const CodeLineSelection.collapsed(
-          index: 0,
-          offset: 1
-        )), true);
-        expect(selection.contains(const CodeLineSelection.collapsed(
-          index: 0,
-          offset: 4
-        )), true);
-        expect(selection.contains(const CodeLineSelection(
-          baseIndex: 1,
-          baseOffset: 0,
-          extentIndex: 1,
-          extentOffset: 1000
-        )), true);
-        expect(selection.contains(const CodeLineSelection(
-          baseIndex: 1,
-          baseOffset: 0,
-          extentIndex: 2,
-          extentOffset: 1000
-        )), true);
-        expect(selection.contains(const CodeLineSelection(
-          baseIndex: 1,
-          baseOffset: 0,
-          extentIndex: 3,
-          extentOffset: 1000
-        )), false);
+        expect(
+            selection.contains(
+                const CodeLineSelection.collapsed(index: 0, offset: 1)),
+            true);
+        expect(
+            selection.contains(
+                const CodeLineSelection.collapsed(index: 0, offset: 4)),
+            true);
+        expect(
+            selection.contains(const CodeLineSelection(
+                baseIndex: 1,
+                baseOffset: 0,
+                extentIndex: 1,
+                extentOffset: 1000)),
+            true);
+        expect(
+            selection.contains(const CodeLineSelection(
+                baseIndex: 1,
+                baseOffset: 0,
+                extentIndex: 2,
+                extentOffset: 1000)),
+            true);
+        expect(
+            selection.contains(const CodeLineSelection(
+                baseIndex: 1,
+                baseOffset: 0,
+                extentIndex: 3,
+                extentOffset: 1000)),
+            false);
       }
     });
 
@@ -587,61 +545,56 @@ void main() {
         extentOffset: 3,
       );
       expect(selection.copyWith(), selection);
-      expect(selection.copyWith(
-        baseIndex: 3,
-        baseOffset: 3,
-        extentIndex: 0,
-        extentOffset: 0,
-        baseAffinity: TextAffinity.upstream,
-        extentAffinity: TextAffinity.upstream
-      ), const CodeLineSelection(
-        baseIndex: 3,
-        baseOffset: 3,
-        extentIndex: 0,
-        extentOffset: 0,
-        baseAffinity: TextAffinity.upstream,
-        extentAffinity: TextAffinity.upstream
-      ));
-      expect(selection.copyWith(
-        baseIndex: 3,
-        baseAffinity: TextAffinity.upstream
-      ), const CodeLineSelection(
-        baseIndex: 3,
-        baseOffset: 0,
-        extentIndex: 3,
-        extentOffset: 3,
-        baseAffinity: TextAffinity.upstream
-      ));
-      expect(selection.copyWith(
-        baseOffset: 3,
-        baseAffinity: TextAffinity.upstream
-      ), const CodeLineSelection(
-        baseIndex: 0,
-        baseOffset: 3,
-        extentIndex: 3,
-        extentOffset: 3,
-        baseAffinity: TextAffinity.upstream
-      ));
-      expect(selection.copyWith(
-        extentIndex: 0,
-        extentAffinity: TextAffinity.upstream
-      ), const CodeLineSelection(
-        baseIndex: 0,
-        baseOffset: 0,
-        extentIndex: 0,
-        extentOffset: 3,
-        extentAffinity: TextAffinity.upstream
-      ));
-      expect(selection.copyWith(
-        extentOffset: 0,
-        extentAffinity: TextAffinity.upstream
-      ), const CodeLineSelection(
-        baseIndex: 0,
-        baseOffset: 0,
-        extentIndex: 3,
-        extentOffset: 0,
-        extentAffinity: TextAffinity.upstream
-      ));
+      expect(
+          selection.copyWith(
+              baseIndex: 3,
+              baseOffset: 3,
+              extentIndex: 0,
+              extentOffset: 0,
+              baseAffinity: TextAffinity.upstream,
+              extentAffinity: TextAffinity.upstream),
+          const CodeLineSelection(
+              baseIndex: 3,
+              baseOffset: 3,
+              extentIndex: 0,
+              extentOffset: 0,
+              baseAffinity: TextAffinity.upstream,
+              extentAffinity: TextAffinity.upstream));
+      expect(
+          selection.copyWith(baseIndex: 3, baseAffinity: TextAffinity.upstream),
+          const CodeLineSelection(
+              baseIndex: 3,
+              baseOffset: 0,
+              extentIndex: 3,
+              extentOffset: 3,
+              baseAffinity: TextAffinity.upstream));
+      expect(
+          selection.copyWith(
+              baseOffset: 3, baseAffinity: TextAffinity.upstream),
+          const CodeLineSelection(
+              baseIndex: 0,
+              baseOffset: 3,
+              extentIndex: 3,
+              extentOffset: 3,
+              baseAffinity: TextAffinity.upstream));
+      expect(
+          selection.copyWith(
+              extentIndex: 0, extentAffinity: TextAffinity.upstream),
+          const CodeLineSelection(
+              baseIndex: 0,
+              baseOffset: 0,
+              extentIndex: 0,
+              extentOffset: 3,
+              extentAffinity: TextAffinity.upstream));
+      expect(
+          selection.copyWith(
+              extentOffset: 0, extentAffinity: TextAffinity.upstream),
+          const CodeLineSelection(
+              baseIndex: 0,
+              baseOffset: 0,
+              extentIndex: 3,
+              extentOffset: 0,
+              extentAffinity: TextAffinity.upstream));
     });
   });
 }

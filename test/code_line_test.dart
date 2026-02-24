@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:re_editor/re_editor.dart';
+import 'package:lonamd/lonamd.dart';
 
 void main() {
   group('CodeLine getter ', () {
@@ -13,10 +13,8 @@ void main() {
         expect(codeLine.length, 3);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.length, 3);
       }
     });
@@ -27,10 +25,8 @@ void main() {
         expect(codeLine.chunkParent, false);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.chunkParent, true);
       }
     });
@@ -45,10 +41,8 @@ void main() {
         expect(codeLine.lineCount, 1);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.lineCount, 3);
       }
       {
@@ -83,10 +77,8 @@ void main() {
         expect(codeLine.charCount, 3);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.charCount, 9);
       }
       {
@@ -119,10 +111,8 @@ void main() {
         expect(codeLine.toString(), 'abc');
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.toString(), 'abc');
       }
     });
@@ -135,10 +125,8 @@ void main() {
         expect(codeLine.asString(3, TextLineBreak.lf), '');
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.asString(0, TextLineBreak.lf), 'abc\nfoo\nbar');
         expect(codeLine.asString(0, TextLineBreak.crlf), 'abc\r\nfoo\r\nbar');
         expect(codeLine.asString(1, TextLineBreak.lf), 'bc\nfoo\nbar');
@@ -153,7 +141,8 @@ void main() {
             CodeLine('bar'),
           ])
         ]);
-        expect(codeLine.asString(0, TextLineBreak.lf), 'abc\nfoo\nbar\n123\nfoo\nbar');
+        expect(codeLine.asString(0, TextLineBreak.lf),
+            'abc\nfoo\nbar\n123\nfoo\nbar');
       }
     });
 
@@ -163,10 +152,8 @@ void main() {
         expect(codeLine.flat(), const ['abc']);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.flat(), const ['abc', 'foo', 'bar']);
       }
       {
@@ -178,7 +165,8 @@ void main() {
             CodeLine('bar'),
           ])
         ]);
-        expect(codeLine.flat(), const ['abc', 'foo', 'bar', '123', 'foo', 'bar']);
+        expect(
+            codeLine.flat(), const ['abc', 'foo', 'bar', '123', 'foo', 'bar']);
       }
     });
 
@@ -188,33 +176,22 @@ void main() {
         expect(codeLine.copyWith(), codeLine);
       }
       {
-        const CodeLine codeLine = CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        const CodeLine codeLine =
+            CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]);
         expect(codeLine.copyWith(), codeLine);
       }
       {
-        final CodeLine codeLine = const CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]).copyWith(
+        final CodeLine codeLine =
+            const CodeLine('abc', [CodeLine('foo'), CodeLine('bar')]).copyWith(
           text: '123',
         );
         expect(codeLine.text, '123');
-        expect(codeLine.chunks, const [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]);
+        expect(codeLine.chunks, const [CodeLine('foo'), CodeLine('bar')]);
       }
       {
-        final CodeLine codeLine = const CodeLine('abc', [
-          CodeLine('foo'),
-          CodeLine('bar')
-        ]).copyWith(
-          text: '123',
-          chunks: const []
-        );
+        final CodeLine codeLine =
+            const CodeLine('abc', [CodeLine('foo'), CodeLine('bar')])
+                .copyWith(text: '123', chunks: const []);
         expect(codeLine.text, '123');
         expect(codeLine.chunks, const []);
       }
@@ -229,36 +206,24 @@ void main() {
         expect(codeLine1, codeLine2);
       }
       {
-        final CodeLine codeLine1 = CodeLine('abc' * 1, [
-          CodeLine('foo' * 1),
-          CodeLine('bar' * 1)
-        ]);
-        final CodeLine codeLine2 = CodeLine('abc' * 1, [
-          CodeLine('foo' * 1),
-          CodeLine('bar' * 1)
-        ]);
+        final CodeLine codeLine1 =
+            CodeLine('abc' * 1, [CodeLine('foo' * 1), CodeLine('bar' * 1)]);
+        final CodeLine codeLine2 =
+            CodeLine('abc' * 1, [CodeLine('foo' * 1), CodeLine('bar' * 1)]);
         expect(codeLine1, codeLine2);
       }
       {
-        final CodeLine codeLine1 = CodeLine('abc' * 1, [
-          const CodeLine('foo'),
-          const CodeLine('bar')
-        ]);
-        final CodeLine codeLine2 = CodeLine('abc' * 2, [
-          const CodeLine('foo'),
-          const CodeLine('bar')
-        ]);
+        final CodeLine codeLine1 =
+            CodeLine('abc' * 1, [const CodeLine('foo'), const CodeLine('bar')]);
+        final CodeLine codeLine2 =
+            CodeLine('abc' * 2, [const CodeLine('foo'), const CodeLine('bar')]);
         expect(codeLine1 == codeLine2, false);
       }
       {
-        final CodeLine codeLine1 = CodeLine('abc' * 1, [
-          CodeLine('foo' * 1),
-          CodeLine('bar' * 1)
-        ]);
-        final CodeLine codeLine2 = CodeLine('abc' * 1, [
-          CodeLine('foo' * 2),
-          CodeLine('bar' * 2)
-        ]);
+        final CodeLine codeLine1 =
+            CodeLine('abc' * 1, [CodeLine('foo' * 1), CodeLine('bar' * 1)]);
+        final CodeLine codeLine2 =
+            CodeLine('abc' * 1, [CodeLine('foo' * 2), CodeLine('bar' * 2)]);
         expect(codeLine1 == codeLine2, false);
       }
     });
