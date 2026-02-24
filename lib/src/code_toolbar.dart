@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 typedef ToolbarMenuBuilder = Widget Function({
   required BuildContext context,
@@ -9,7 +9,6 @@ typedef ToolbarMenuBuilder = Widget Function({
 });
 
 abstract class SelectionToolbarController {
-
   void show({
     required BuildContext context,
     required CodeLineEditingController controller,
@@ -20,15 +19,11 @@ abstract class SelectionToolbarController {
   });
 
   void hide(BuildContext context);
-
 }
 
-abstract class MobileSelectionToolbarController implements SelectionToolbarController {
-
-  factory MobileSelectionToolbarController({
-    required ToolbarMenuBuilder builder
-  }) => _MobileSelectionToolbarController(
-    builder: builder
-  );
-
+abstract class MobileSelectionToolbarController
+    implements SelectionToolbarController {
+  factory MobileSelectionToolbarController(
+          {required ToolbarMenuBuilder builder}) =>
+      _MobileSelectionToolbarController(builder: builder);
 }

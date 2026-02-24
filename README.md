@@ -4,6 +4,8 @@ Flutter Markdown Editor Based on [Re-Editor](https://github.com/reqable/re-edito
 
 In development...
 
+[中文版本](./README_CN.md)
+
 ## License
 
 MIT License

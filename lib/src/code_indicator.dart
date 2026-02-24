@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 const int _kDefaultMinNumberCount = 3;
 const Size _kDefaultChunkIndicatorSize = Size(7, 7);
@@ -12,7 +12,6 @@ typedef CodeIndicatorBuilder = Widget Function(
 );
 
 class CodeIndicatorValue {
-
   final List<CodeLineRenderParagraph> paragraphs;
   final int focusedIndex;
 
@@ -42,11 +41,9 @@ class CodeIndicatorValue {
       focusedIndex: focusedIndex ?? this.focusedIndex,
     );
   }
-
 }
 
 class DefaultCodeLineNumber extends LeafRenderObjectWidget {
-
   final CodeLineEditingController controller;
   final CodeIndicatorValueNotifier notifier;
   final TextStyle? textStyle;
@@ -65,17 +62,19 @@ class DefaultCodeLineNumber extends LeafRenderObjectWidget {
   });
 
   @override
-  RenderObject createRenderObject(BuildContext context) => CodeLineNumberRenderObject(
-    controller: controller,
-    notifier: notifier,
-    textStyle: textStyle ?? _useCodeTextStyle(context, false),
-    focusedTextStyle: focusedTextStyle ?? _useCodeTextStyle(context, true),
-    minNumberCount: minNumberCount ?? _kDefaultMinNumberCount,
-    custonLineIndex2Text: customLineIndex2Text,
-  );
+  RenderObject createRenderObject(BuildContext context) =>
+      CodeLineNumberRenderObject(
+        controller: controller,
+        notifier: notifier,
+        textStyle: textStyle ?? _useCodeTextStyle(context, false),
+        focusedTextStyle: focusedTextStyle ?? _useCodeTextStyle(context, true),
+        minNumberCount: minNumberCount ?? _kDefaultMinNumberCount,
+        custonLineIndex2Text: customLineIndex2Text,
+      );
 
   @override
-  void updateRenderObject(BuildContext context, covariant CodeLineNumberRenderObject renderObject) {
+  void updateRenderObject(
+      BuildContext context, covariant CodeLineNumberRenderObject renderObject) {
     renderObject
       ..controller = controller
       ..notifier = notifier
@@ -86,17 +85,15 @@ class DefaultCodeLineNumber extends LeafRenderObjectWidget {
   }
 
   TextStyle _useCodeTextStyle(BuildContext context, bool focused) {
-    final _CodeEditable? editor = context.findAncestorWidgetOfExactType<_CodeEditable>();
+    final _CodeEditable? editor =
+        context.findAncestorWidgetOfExactType<_CodeEditable>();
     assert(editor != null);
     return editor!.textStyle.copyWith(
-      color: focused ? null :  editor.textStyle.color?.withAlpha(128)
-    );
+        color: focused ? null : editor.textStyle.color?.withAlpha(128));
   }
-
 }
 
 class DefaultCodeChunkIndicator extends LeafRenderObjectWidget {
-
   final double width;
   final CodeChunkController controller;
   final CodeIndicatorValueNotifier notifier;
@@ -115,58 +112,57 @@ class DefaultCodeChunkIndicator extends LeafRenderObjectWidget {
   });
 
   @override
-  RenderObject createRenderObject(BuildContext context) => CodeChunkIndicatorRenderObject(
-    width: width,
-    controller: controller,
-    notifier: notifier,
-    painter: painter ?? DefaultCodeChunkIndicatorPainter(
-      color: _useCodeTextColor(context),
-    ),
-    collapseIndicatorVisible: collapseIndicatorVisible,
-    expandIndicatorVisible: expandIndicatorVisible,
-  );
+  RenderObject createRenderObject(BuildContext context) =>
+      CodeChunkIndicatorRenderObject(
+        width: width,
+        controller: controller,
+        notifier: notifier,
+        painter: painter ??
+            DefaultCodeChunkIndicatorPainter(
+              color: _useCodeTextColor(context),
+            ),
+        collapseIndicatorVisible: collapseIndicatorVisible,
+        expandIndicatorVisible: expandIndicatorVisible,
+      );
 
   @override
-  void updateRenderObject(BuildContext context, covariant CodeChunkIndicatorRenderObject renderObject) {
+  void updateRenderObject(BuildContext context,
+      covariant CodeChunkIndicatorRenderObject renderObject) {
     renderObject
       ..width = width
       ..controller = controller
       ..notifier = notifier
-      ..painter = painter ?? DefaultCodeChunkIndicatorPainter(
-        color: _useCodeTextColor(context),
-      )
+      ..painter = painter ??
+          DefaultCodeChunkIndicatorPainter(
+            color: _useCodeTextColor(context),
+          )
       ..collapseIndicatorVisible = collapseIndicatorVisible
       ..expandIndicatorVisible = expandIndicatorVisible;
     super.updateRenderObject(context, renderObject);
   }
 
   Color? _useCodeTextColor(BuildContext context) {
-    final _CodeEditable? editor = context.findAncestorWidgetOfExactType<_CodeEditable>();
+    final _CodeEditable? editor =
+        context.findAncestorWidgetOfExactType<_CodeEditable>();
     assert(editor != null);
     return editor!.textStyle.color?.withAlpha(128);
   }
-
 }
 
 abstract class CodeChunkIndicatorPainter {
-
   void paintCollapseIndicator(Canvas canvas, Size container);
 
   void paintExpandIndicator(Canvas canvas, Size container);
-
 }
 
 class DefaultCodeChunkIndicatorPainter implements CodeChunkIndicatorPainter {
-
   final Color? color;
   final Size size;
 
   late final Paint _paint;
 
-  DefaultCodeChunkIndicatorPainter({
-    this.color,
-    this.size = _kDefaultChunkIndicatorSize
-  }) {
+  DefaultCodeChunkIndicatorPainter(
+      {this.color, this.size = _kDefaultChunkIndicatorSize}) {
     _paint = Paint();
     if (color != null) {
       _paint.color = color!;
@@ -179,10 +175,13 @@ class DefaultCodeChunkIndicatorPainter implements CodeChunkIndicatorPainter {
       return;
     }
     final Path path = Path();
-    path.moveTo((container.width - size.width) / 2, (container.height - size.height) / 2);
-    path.lineTo((container.width + size.width) / 2, (container.height - size.height) / 2);
+    path.moveTo((container.width - size.width) / 2,
+        (container.height - size.height) / 2);
+    path.lineTo((container.width + size.width) / 2,
+        (container.height - size.height) / 2);
     path.lineTo(container.width / 2, (container.height + size.height) / 2);
-    path.lineTo((container.width - size.width) / 2, (container.height - size.height) / 2);
+    path.lineTo((container.width - size.width) / 2,
+        (container.height - size.height) / 2);
     canvas.drawPath(path, _paint);
   }
 
@@ -192,11 +191,13 @@ class DefaultCodeChunkIndicatorPainter implements CodeChunkIndicatorPainter {
       return;
     }
     final Path path = Path();
-    path.moveTo((container.width - size.width) / 2, (container.height - size.height) / 2);
+    path.moveTo((container.width - size.width) / 2,
+        (container.height - size.height) / 2);
     path.lineTo((container.width + size.width) / 2, container.height / 2);
-    path.lineTo((container.width - size.width) / 2, (container.height + size.height) / 2);
-    path.lineTo((container.width - size.width) / 2, (container.height - size.height) / 2);
+    path.lineTo((container.width - size.width) / 2,
+        (container.height + size.height) / 2);
+    path.lineTo((container.width - size.width) / 2,
+        (container.height - size.height) / 2);
     canvas.drawPath(path, _paint);
   }
-
 }

@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 final kIsMacOS = defaultTargetPlatform == TargetPlatform.macOS;
 final kIsAndroid = defaultTargetPlatform == TargetPlatform.android;

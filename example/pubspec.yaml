@@ -1,19 +1,18 @@
-name: re_editor_exmaple
+name: lonamd_exmaple
 description: A new Flutter project.
 publish_to: none
 
 version: 1.0.0
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: '>=2.17.0 <3.0.0'
+  flutter: '>=1.17.0'
 
 dependencies:
   flutter:
     sdk: flutter
   collection: ^1.17.1
-  re_highlight: ^0.0.2
-  re_editor:
+  lonamd:
     path: ../
 
 dev_dependencies:
@@ -24,7 +23,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

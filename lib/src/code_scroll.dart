@@ -1,9 +1,9 @@
-part of re_editor;
+part of lonamd;
 
-typedef CodeScrollbarBuilder = Widget Function(BuildContext context, Widget child, ScrollableDetails details);
+typedef CodeScrollbarBuilder = Widget Function(
+    BuildContext context, Widget child, ScrollableDetails details);
 
 class CodeScrollController {
-
   final ScrollController verticalScroller;
   final ScrollController horizontalScroller;
 
@@ -12,8 +12,8 @@ class CodeScrollController {
   CodeScrollController({
     ScrollController? verticalScroller,
     ScrollController? horizontalScroller,
-  }) : verticalScroller = verticalScroller ?? ScrollController(),
-    horizontalScroller = horizontalScroller ?? ScrollController();
+  })  : verticalScroller = verticalScroller ?? ScrollController(),
+        horizontalScroller = horizontalScroller ?? ScrollController();
 
   void makeCenterIfInvisible(CodeLinePosition position) {
     _render?.makePositionCenterIfInvisible(position);
@@ -27,10 +27,10 @@ class CodeScrollController {
     _editorKey = key;
   }
 
-  _CodeFieldRender? get _render => _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
+  _CodeFieldRender? get _render =>
+      _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
 
   void dispose() {
     _editorKey = null;
   }
-
 }

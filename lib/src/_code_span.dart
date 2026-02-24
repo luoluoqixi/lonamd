@@ -1,8 +1,7 @@
-part of re_editor;
+part of lonamd;
 
 @immutable
 class _MouseTrackerAnnotationTextSpan extends TextSpan {
-
   final int id;
   final MouseTrackerAnnotationTextSpan span;
   final List<Rect> rects;
@@ -15,13 +14,13 @@ class _MouseTrackerAnnotationTextSpan extends TextSpan {
 
   @override
   PointerEnterEventListener? get onEnter => (event) {
-    span.onEnterWithRect(event, id, rects);
-  };
+        span.onEnterWithRect(event, id, rects);
+      };
 
   @override
   PointerExitEventListener? get onExit => (event) {
-    span.onExitWithRect(event, id, rects);
-  };
+        span.onExitWithRect(event, id, rects);
+      };
 
   @override
   int get hashCode => span.hashCode;
@@ -31,8 +30,8 @@ class _MouseTrackerAnnotationTextSpan extends TextSpan {
     if (identical(this, other)) {
       return true;
     }
-    return other is _MouseTrackerAnnotationTextSpan && span == other.span &&
-      id == other.id;
+    return other is _MouseTrackerAnnotationTextSpan &&
+        span == other.span &&
+        id == other.id;
   }
-
 }

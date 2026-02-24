@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 class _CodeShortcuts extends StatefulWidget {
   final CodeShortcutsActivatorsBuilder builder;

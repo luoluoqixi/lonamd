@@ -1,18 +1,22 @@
-part of re_editor;
+part of lonamd;
 
 class CodeChunkController extends ValueNotifier<List<CodeChunk>> {
-
   late final CodeLineEditingController _controller;
   final CodeChunkAnalyzer _analyzer;
 
-  late final _IsolateTasker<_CodeChunkAnalyzePayload, _CodeChunkAnalyzeResult> _tasker;
+  late final _IsolateTasker<_CodeChunkAnalyzePayload, _CodeChunkAnalyzeResult>
+      _tasker;
 
   late bool _shouldNotUpdateChunks;
 
-  CodeChunkController(CodeLineEditingController controller, this._analyzer) : super(const []) {
-    _controller = controller is _CodeLineEditingControllerDelegate ? controller.delegate : controller;
+  CodeChunkController(CodeLineEditingController controller, this._analyzer)
+      : super(const []) {
+    _controller = controller is _CodeLineEditingControllerDelegate
+        ? controller.delegate
+        : controller;
     _controller.addListener(_onCodeChanged);
-    _tasker = _IsolateTasker<_CodeChunkAnalyzePayload, _CodeChunkAnalyzeResult>('CodeChunk', _run);
+    _tasker = _IsolateTasker<_CodeChunkAnalyzePayload, _CodeChunkAnalyzeResult>(
+        'CodeChunk', _run);
     _shouldNotUpdateChunks = false;
     _runChunkAnalyzeTask();
   }
@@ -34,9 +38,9 @@ class CodeChunkController extends ValueNotifier<List<CodeChunk>> {
     for (int i = 0; i < codeChunks.length; i++) {
       final CodeChunk e = codeChunks[i];
       if (e.index >= index || e.end >= index) {
-        codeChunks[i] = CodeChunk(e.index > index ? e.index - chunk.collapseSize : e.index,
-          e.end > index ? e.end - chunk.collapseSize : e.end
-        );
+        codeChunks[i] = CodeChunk(
+            e.index > index ? e.index - chunk.collapseSize : e.index,
+            e.end > index ? e.end - chunk.collapseSize : e.end);
       }
     }
     value = codeChunks;
@@ -56,9 +60,9 @@ class CodeChunkController extends ValueNotifier<List<CodeChunk>> {
     for (int i = 0; i < codeChunks.length; i++) {
       final CodeChunk e = codeChunks[i];
       if (e.index >= index || e.end >= index) {
-        codeChunks[i] = CodeChunk(e.index > index ? e.index + codeLine.chunks.length : e.index,
-          e.end > index ? e.end + codeLine.chunks.length : e.end
-        );
+        codeChunks[i] = CodeChunk(
+            e.index > index ? e.index + codeLine.chunks.length : e.index,
+            e.end > index ? e.end + codeLine.chunks.length : e.end);
       }
       if (e.index == index) {
         exists = true;
@@ -130,7 +134,7 @@ class CodeChunkController extends ValueNotifier<List<CodeChunk>> {
 
   void _expandInvalidCollapsedChunks(List<int> indexes) {
     // Expand invalid chunks from bottom to top
-    for (int i = indexes.length - 1; i >=0; i--) {
+    for (int i = indexes.length - 1; i >= 0; i--) {
       expand(indexes[i]);
     }
   }
@@ -150,11 +154,9 @@ class CodeChunkController extends ValueNotifier<List<CodeChunk>> {
     }
     return _CodeChunkAnalyzeResult(chunks, invalidCollapsedChunkIndexes);
   }
-
 }
 
 class CodeChunk {
-
   final int index;
   final int end;
 
@@ -169,9 +171,7 @@ class CodeChunk {
     if (identical(this, other)) {
       return true;
     }
-    return other is CodeChunk
-        && other.index == index
-        && other.end == end;
+    return other is CodeChunk && other.index == index && other.end == end;
   }
 
   @override
@@ -181,26 +181,20 @@ class CodeChunk {
   String toString() {
     return '[$index, $end]';
   }
-
 }
 
 abstract class CodeChunkAnalyzer {
-
   List<CodeChunk> run(CodeLines codeLines);
-
 }
 
 class NonCodeChunkAnalyzer implements CodeChunkAnalyzer {
-
   const NonCodeChunkAnalyzer();
 
   @override
   List<CodeChunk> run(CodeLines codeLines) => const [];
-
 }
 
 class DefaultCodeChunkAnalyzer implements CodeChunkAnalyzer {
-
   static const Map<String, String> _chunkSymbols = {
     '(': ')',
     '[': ']',
@@ -220,10 +214,11 @@ class DefaultCodeChunkAnalyzer implements CodeChunkAnalyzer {
         stack.add(symbol);
         continue;
       }
-      while(stack.isNotEmpty) {
+      while (stack.isNotEmpty) {
         final CodeChunkSymbol pop = stack.removeLast();
         if (_chunkSymbols[pop.value] == symbol.value) {
-          if (symbol.index - pop.index >= 1 && chunks.where((e) => e.index == pop.index).isEmpty) {
+          if (symbol.index - pop.index >= 1 &&
+              chunks.where((e) => e.index == pop.index).isEmpty) {
             chunks.add(CodeChunk(pop.index, symbol.index));
           }
           break;
@@ -314,11 +309,9 @@ class DefaultCodeChunkAnalyzer implements CodeChunkAnalyzer {
   bool isPreEscapeChar(List<int> codeUnits, int index) {
     return index > 0 && codeUnits[index - 1] == '\\'.codeUnits.first;
   }
-
 }
 
 class CodeChunkSymbol {
-
   final String value;
   final int index;
 
@@ -329,9 +322,9 @@ class CodeChunkSymbol {
     if (identical(this, other)) {
       return true;
     }
-    return other is CodeChunkSymbol
-        && other.value == value
-        && other.index == index;
+    return other is CodeChunkSymbol &&
+        other.value == value &&
+        other.index == index;
   }
 
   @override
@@ -341,23 +334,18 @@ class CodeChunkSymbol {
   String toString() {
     return '$value@$index';
   }
-
 }
 
 class _CodeChunkAnalyzePayload {
-
   final CodeChunkAnalyzer analyzer;
   final CodeLines codeLines;
 
   const _CodeChunkAnalyzePayload(this.analyzer, this.codeLines);
-
 }
 
 class _CodeChunkAnalyzeResult {
-
   final List<CodeChunk> chunks;
   final List<int> invalidCollapsedChunkIndexes;
 
   const _CodeChunkAnalyzeResult(this.chunks, this.invalidCollapsedChunkIndexes);
-
 }

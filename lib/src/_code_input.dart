@@ -1,7 +1,7 @@
-part of re_editor;
+part of lonamd;
 
-class _CodeInputController extends ChangeNotifier implements DeltaTextInputClient {
-
+class _CodeInputController extends ChangeNotifier
+    implements DeltaTextInputClient {
   CodeLineEditingController _controller;
   FocusNode _focusNode;
   bool _readOnly;
@@ -23,12 +23,12 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     required FocusNode focusNode,
     required bool readOnly,
     required bool autocompleteSymbols,
-  }) : _controller = controller,
-    _floatingCursorController = floatingCursorController,
-    _focusNode = focusNode,
-    _readOnly = readOnly,
-    _updateCausedByFloatingCursor = false,
-    _autocompleteSymbols = autocompleteSymbols {
+  })  : _controller = controller,
+        _floatingCursorController = floatingCursorController,
+        _focusNode = focusNode,
+        _readOnly = readOnly,
+        _updateCausedByFloatingCursor = false,
+        _autocompleteSymbols = autocompleteSymbols {
     _controller.addListener(_onCodeEditingChanged);
     _focusNode.addListener(_onFocusChanged);
   }
@@ -91,8 +91,7 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
   TextRange get composing => _controller.composing;
 
   @override
-  void connectionClosed() {
-  }
+  void connectionClosed() {}
 
   @override
   AutofillScope? get currentAutofillScope => null;
@@ -112,24 +111,19 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
   }
 
   @override
-  void performPrivateCommand(String action, Map<String, dynamic> data) {
-  }
+  void performPrivateCommand(String action, Map<String, dynamic> data) {}
 
   @override
-  void showAutocorrectionPromptRect(int start, int end) {
-  }
+  void showAutocorrectionPromptRect(int start, int end) {}
 
   @override
-  void showToolbar() {
-  }
+  void showToolbar() {}
 
   @override
-  void insertTextPlaceholder(Size size) {
-  }
+  void insertTextPlaceholder(Size size) {}
 
   @override
-  void removeTextPlaceholder() {
-  }
+  void removeTextPlaceholder() {}
 
   @override
   void updateEditingValueWithDeltas(List<TextEditingDelta> textEditingDeltas) {
@@ -140,7 +134,8 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
       return;
     }
 
-    if (textEditingDeltas.any((delta) => delta is TextEditingDeltaInsertion && delta.textInserted == '\n')) {
+    if (textEditingDeltas.any((delta) =>
+        delta is TextEditingDeltaInsertion && delta.textInserted == '\n')) {
       TextEditingValue newValue = _remoteEditingValue!;
       for (final TextEditingDelta delta in textEditingDeltas) {
         newValue = delta.apply(newValue);
@@ -155,7 +150,8 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     bool smartChange = false;
     for (final TextEditingDelta delta in textEditingDeltas) {
       if (_autocompleteSymbols) {
-        TextEditingDelta newDelta = _SmartTextEditingDelta(delta).apply(selection);
+        TextEditingDelta newDelta =
+            _SmartTextEditingDelta(delta).apply(selection);
         if (newDelta != delta) {
           smartChange = true;
         }
@@ -187,31 +183,36 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
   }
 
   @override
-  void updateEditingValue(TextEditingValue textEditingValue) {
-  }
+  void updateEditingValue(TextEditingValue textEditingValue) {}
 
   @override
   void updateFloatingCursor(RawFloatingCursorPoint point) {
     _updateCausedByFloatingCursor = true;
-    final _CodeFieldRender? render = _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
+    final _CodeFieldRender? render =
+        _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
     if (render == null) {
       return;
     }
-    switch(point.state) {
+    switch (point.state) {
       case FloatingCursorDragState.Start:
-        _floatingCursorStartingOffset = render.calculateTextPositionViewportOffset(selection.base)!;
+        _floatingCursorStartingOffset =
+            render.calculateTextPositionViewportOffset(selection.base)!;
         _floatingCursorController.setFloatingCursorPositions(
           floatingCursorOffset: _floatingCursorStartingOffset,
           finalCursorSelection: selection,
         );
         break;
       case FloatingCursorDragState.Update:
-        final Offset updatedOffset = _floatingCursorStartingOffset + point.offset!;
+        final Offset updatedOffset =
+            _floatingCursorStartingOffset + point.offset!;
 
         final double topBound = render.paintBounds.top + render.paddingTop;
         final double leftBound = render.paintBounds.left + render.paddingLeft;
-        final double bottomBound = render.paintBounds.bottom - render.paddingBottom - render.floatingCursorHeight;
-        final double rightBound = render.paintBounds.right - render.paddingRight;
+        final double bottomBound = render.paintBounds.bottom -
+            render.paddingBottom -
+            render.floatingCursorHeight;
+        final double rightBound =
+            render.paintBounds.right - render.paddingRight;
 
         // Clamp the offset coordinates to the paint bounds
         Offset clampedUpdatedOffset = Offset(
@@ -221,14 +222,17 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
 
         // An adjustment is made on the y-axis so that whenever it is in between lines, the line where the center
         // of the floating cursor is will be selected.
-        Offset adjustedClampedUpdatedOffset = clampedUpdatedOffset + Offset(0, render.floatingCursorHeight / 2);
-        final CodeLinePosition newPosition = render.calculateTextPosition(adjustedClampedUpdatedOffset)!;
+        Offset adjustedClampedUpdatedOffset =
+            clampedUpdatedOffset + Offset(0, render.floatingCursorHeight / 2);
+        final CodeLinePosition newPosition =
+            render.calculateTextPosition(adjustedClampedUpdatedOffset)!;
 
         // The offset at which the actual cursor would end up if floating cursor was terminated now.
-        final Offset? snappedNewOffset = render.calculateTextPositionViewportOffset(newPosition);
+        final Offset? snappedNewOffset =
+            render.calculateTextPositionViewportOffset(newPosition);
 
-        CodeLineSelection newSelection = CodeLineSelection.fromPosition(position: newPosition);
-
+        CodeLineSelection newSelection =
+            CodeLineSelection.fromPosition(position: newPosition);
 
         if (clampedUpdatedOffset != updatedOffset) {
           // When the cursor is at one of the edges, adjust the starting offset so that the floating cursor
@@ -236,22 +240,28 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
           _floatingCursorStartingOffset += clampedUpdatedOffset - updatedOffset;
         }
 
-        if (clampedUpdatedOffset.dy == topBound || clampedUpdatedOffset.dy == bottomBound || clampedUpdatedOffset.dx == rightBound || clampedUpdatedOffset.dx == leftBound) {
-          _floatingCursorScrollTimer ??= Timer.periodic(const Duration(milliseconds: 50), (timer) {
+        if (clampedUpdatedOffset.dy == topBound ||
+            clampedUpdatedOffset.dy == bottomBound ||
+            clampedUpdatedOffset.dx == rightBound ||
+            clampedUpdatedOffset.dx == leftBound) {
+          _floatingCursorScrollTimer ??=
+              Timer.periodic(const Duration(milliseconds: 50), (timer) {
             render.autoScrollWhenDraggingFloatingCursor(clampedUpdatedOffset);
-            final CodeLinePosition newPos = render.calculateTextPosition(adjustedClampedUpdatedOffset)!;
-            final Offset? snappedNewOffset = render.calculateTextPositionViewportOffset(newPos);
+            final CodeLinePosition newPos =
+                render.calculateTextPosition(adjustedClampedUpdatedOffset)!;
+            final Offset? snappedNewOffset =
+                render.calculateTextPositionViewportOffset(newPos);
 
             // This step ensures that the preview cursor will keep updating when scrolling
-            if (adjustedClampedUpdatedOffset.dx > snappedNewOffset!.dx + render.textStyle.fontSize!) {
-              _floatingCursorController.updatePreviewCursorOffset(snappedNewOffset);
-            }
-            else {
+            if (adjustedClampedUpdatedOffset.dx >
+                snappedNewOffset!.dx + render.textStyle.fontSize!) {
+              _floatingCursorController
+                  .updatePreviewCursorOffset(snappedNewOffset);
+            } else {
               _floatingCursorController.updatePreviewCursorOffset(null);
             }
           });
-        }
-        else {
+        } else {
           if (_floatingCursorScrollTimer != null) {
             _floatingCursorScrollTimer!.cancel();
             _floatingCursorScrollTimer = null;
@@ -259,20 +269,18 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
         }
 
         // Only turn on the preview cursor if we are away from the end of the line (relatively to the font size)
-        if (adjustedClampedUpdatedOffset.dx > snappedNewOffset!.dx + render.textStyle.fontSize!) {
+        if (adjustedClampedUpdatedOffset.dx >
+            snappedNewOffset!.dx + render.textStyle.fontSize!) {
           _floatingCursorController.setFloatingCursorPositions(
-            floatingCursorOffset: clampedUpdatedOffset,
-            previewCursorOffset: snappedNewOffset,
-            finalCursorOffset: snappedNewOffset,
-            finalCursorSelection:newSelection
-          );
-        }
-        else {
+              floatingCursorOffset: clampedUpdatedOffset,
+              previewCursorOffset: snappedNewOffset,
+              finalCursorOffset: snappedNewOffset,
+              finalCursorSelection: newSelection);
+        } else {
           _floatingCursorController.setFloatingCursorPositions(
-            floatingCursorOffset: clampedUpdatedOffset,
-            finalCursorOffset: snappedNewOffset,
-            finalCursorSelection: newSelection
-          );
+              floatingCursorOffset: clampedUpdatedOffset,
+              finalCursorOffset: snappedNewOffset,
+              finalCursorSelection: newSelection);
         }
 
         break;
@@ -283,42 +291,38 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
         }
         selection = _floatingCursorController.value.finalCursorSelection!;
         final CodeLinePosition finalPosition = CodeLinePosition(
-          index: selection.baseIndex,
-          offset: selection.baseOffset,
-          affinity: selection.baseAffinity);
+            index: selection.baseIndex,
+            offset: selection.baseOffset,
+            affinity: selection.baseAffinity);
 
-        final Offset? finalOffset = render.calculateTextPositionViewportOffset(finalPosition);
+        final Offset? finalOffset =
+            render.calculateTextPositionViewportOffset(finalPosition);
 
         // If the final selection is in not the viewport, make it visible without animating the floating cursor.
         // Otherwise, play the floating cursor reset animation.
         if (finalOffset != null && (finalOffset.dx < 0 || finalOffset.dy < 0)) {
           render.makePositionCenterIfInvisible(
-            CodeLinePosition(
-              index: selection.baseIndex,
-              offset: selection.baseOffset,
-              affinity: selection.baseAffinity),
-            animated: true);
-            _floatingCursorController.disableFloatingCursor();
-        }
-        else {
+              CodeLinePosition(
+                  index: selection.baseIndex,
+                  offset: selection.baseOffset,
+                  affinity: selection.baseAffinity),
+              animated: true);
+          _floatingCursorController.disableFloatingCursor();
+        } else {
           _floatingCursorController.animateDisableFloatingCursor();
         }
-
-
     }
   }
 
   @override
-  void didChangeInputControl(TextInputControl? oldControl, TextInputControl? newControl) {
-  }
+  void didChangeInputControl(
+      TextInputControl? oldControl, TextInputControl? newControl) {}
 
   @override
-  void performSelector(String selectorName) {
-  }
+  void performSelector(String selectorName) {}
 
   @override
-  void insertContent(KeyboardInsertedContent content) {
-  }
+  void insertContent(KeyboardInsertedContent content) {}
 
   void ensureInput() {
     if (_focusNode.hasFocus) {
@@ -359,10 +363,10 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     if (localValue == _remoteEditingValue) {
       return;
     }
-    if (localValue.composing.isValid && max(localValue.composing.start, localValue.composing.end) > localValue.text.length) {
-      localValue = localValue.copyWith(
-        composing: TextRange.empty
-      );
+    if (localValue.composing.isValid &&
+        max(localValue.composing.start, localValue.composing.end) >
+            localValue.text.length) {
+      localValue = localValue.copyWith(composing: TextRange.empty);
     }
     // print('post text ${localValue.text}');
     // print('post selection ${localValue.selection}');
@@ -372,33 +376,32 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     _textInputConnection!.setEditingState(localValue);
   }
 
-  void _updateRemoteComposingIfNeeded({
-    bool retry = false
-  }) {
+  void _updateRemoteComposingIfNeeded({bool retry = false}) {
     if (!_hasInputConnection) {
       return;
     }
-    final _CodeFieldRender? render = _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
+    final _CodeFieldRender? render =
+        _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
     if (render == null) {
       return;
     }
-    final Offset? composingStart = render.calculateTextPositionViewportOffset(selection.base.copyWith(
-      offset: _remoteEditingValue?.composing.start
-    ));
-    final Offset? composingEnd = render.calculateTextPositionViewportOffset(selection.extent.copyWith(
-      offset: _remoteEditingValue?.composing.end
-    ));
+    final Offset? composingStart = render.calculateTextPositionViewportOffset(
+        selection.base.copyWith(offset: _remoteEditingValue?.composing.start));
+    final Offset? composingEnd = render.calculateTextPositionViewportOffset(
+        selection.extent.copyWith(offset: _remoteEditingValue?.composing.end));
     if (composingStart != null && composingEnd != null) {
-      _textInputConnection!.setComposingRect(Rect.fromPoints(composingStart, composingEnd + Offset(0, render.lineHeight)));
+      _textInputConnection!.setComposingRect(Rect.fromPoints(
+          composingStart, composingEnd + Offset(0, render.lineHeight)));
     }
-    final Offset? caret = render.calculateTextPositionViewportOffset(selection.base) ?? composingStart;
+    final Offset? caret =
+        render.calculateTextPositionViewportOffset(selection.base) ??
+            composingStart;
     if (caret != null) {
-      _textInputConnection!.setCaretRect(Rect.fromLTWH(caret.dx, caret.dy, render.cursorWidth, render.lineHeight));
+      _textInputConnection!.setCaretRect(Rect.fromLTWH(
+          caret.dx, caret.dy, render.cursorWidth, render.lineHeight));
     } else if (!retry) {
       Future.delayed(const Duration(milliseconds: 10), () {
-        _updateRemoteComposingIfNeeded(
-          retry: true
-        );
+        _updateRemoteComposingIfNeeded(retry: true);
       });
     }
   }
@@ -407,11 +410,13 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     if (!_hasInputConnection) {
       return;
     }
-    final _CodeFieldRender? render = _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
+    final _CodeFieldRender? render =
+        _editorKey?.currentContext?.findRenderObject() as _CodeFieldRender?;
     if (render == null || !render.hasSize) {
       return;
     }
-    _textInputConnection!.setEditableSizeAndTransform(render.size, render.getTransformTo(null));
+    _textInputConnection!
+        .setEditableSizeAndTransform(render.size, render.getTransformTo(null));
   }
 
   void _onFocusChanged() {
@@ -437,7 +442,8 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     if (!_hasInputConnection) {
       // Fix PlatformException issue on new flutter version.
       // See https://github.com/reqable/re-editor/issues/83
-      final TextInputConnection connection = TextInput.attach(this,
+      final TextInputConnection connection = TextInput.attach(
+        this,
         _TextInputConfiguration(
           flutterViewId: View.maybeOf(context)?.viewId ?? 0,
           enableDeltaModel: true,
@@ -470,42 +476,34 @@ class _CodeInputController extends ChangeNotifier implements DeltaTextInputClien
     final TextSelection textSelection;
     if (selection.isSameLine) {
       textSelection = TextSelection(
-        baseOffset: selection.baseOffset,
-        extentOffset: selection.extentOffset
-      );
+          baseOffset: selection.baseOffset,
+          extentOffset: selection.extentOffset);
     } else {
       if (selection.baseIndex < selection.extentIndex) {
         textSelection = TextSelection(
-          baseOffset: selection.baseOffset,
-          extentOffset: codeLines[selection.baseIndex].length
-        );
+            baseOffset: selection.baseOffset,
+            extentOffset: codeLines[selection.baseIndex].length);
       } else {
-        textSelection = TextSelection(
-          baseOffset: 0,
-          extentOffset: selection.baseOffset
-        );
+        textSelection =
+            TextSelection(baseOffset: 0, extentOffset: selection.baseOffset);
       }
     }
     return TextEditingValue(
-      text: codeLines[selection.baseIndex].text,
-      selection: textSelection,
-      composing: composing
-    ).appendPrefixIfNecessary();
+            text: codeLines[selection.baseIndex].text,
+            selection: textSelection,
+            composing: composing)
+        .appendPrefixIfNecessary();
   }
-
 }
 
 class _SmartTextEditingDelta {
-
   static const List<_ClosureSymbol> _closureSymbols = [
     _ClosureSymbol('{', '}'),
     _ClosureSymbol('[', ']'),
     _ClosureSymbol('(', ')'),
   ];
 
-  static const List<String> _quoteSymbols = [
-    '\'', '"', '`'
-  ];
+  static const List<String> _quoteSymbols = ['\'', '"', '`'];
 
   static const List<_ClosureSymbol> _wrapSymbols = [
     _ClosureSymbol('{', '}'),
@@ -548,12 +546,10 @@ class _SmartTextEditingDelta {
           break;
         }
         return TextEditingDeltaNonTextUpdate(
-          oldText: delta.oldText,
-          selection: TextSelection.collapsed(
-            offset: delta.insertionOffset + 1
-          ),
-          composing: delta.composing
-        );
+            oldText: delta.oldText,
+            selection:
+                TextSelection.collapsed(offset: delta.insertionOffset + 1),
+            composing: delta.composing);
       }
     }
     for (final String symbol in _quoteSymbols) {
@@ -574,28 +570,28 @@ class _SmartTextEditingDelta {
     return delta;
   }
 
-  TextEditingDelta _smartReplacement(TextEditingDeltaReplacement delta, CodeLineSelection selection) {
+  TextEditingDelta _smartReplacement(
+      TextEditingDeltaReplacement delta, CodeLineSelection selection) {
     if (!selection.isSameLine) {
       return delta;
     }
     if (delta.replacementText.length > 1) {
       return delta;
     }
-    final int index = _wrapSymbols.indexWhere((element) => element.left == delta.replacementText);
+    final int index = _wrapSymbols
+        .indexWhere((element) => element.left == delta.replacementText);
     if (index < 0) {
       return delta;
     }
     final _ClosureSymbol symbol = _wrapSymbols[index];
     return TextEditingDeltaReplacement(
-      oldText: delta.oldText,
-      replacementText: symbol.left + delta.textReplaced + symbol.right,
-      replacedRange: delta.replacedRange,
-      selection: TextSelection(
-        baseOffset: selection.startOffset + 1,
-        extentOffset: selection.endOffset + 1
-      ),
-      composing: delta.composing
-    );
+        oldText: delta.oldText,
+        replacementText: symbol.left + delta.textReplaced + symbol.right,
+        replacedRange: delta.replacedRange,
+        selection: TextSelection(
+            baseOffset: selection.startOffset + 1,
+            extentOffset: selection.endOffset + 1),
+        composing: delta.composing);
   }
 
   bool _shouldAutoClosed(String text, int offset, _ClosureSymbol symbol) {
@@ -664,7 +660,6 @@ class _SmartTextEditingDelta {
     }
     return leftSymbolCount % 2 == rightSymbolCount % 2;
   }
-
 }
 
 class _ClosureSymbol {
@@ -677,13 +672,11 @@ class _ClosureSymbol {
   String toString() {
     return left + right;
   }
-
 }
 
 const String _kPrefix = '\u200b';
 
 extension _TextEditingValueExtension on TextEditingValue {
-
   bool get startWithPrefix => text.startsWith(_kPrefix);
 
   bool get usePrefix => kIsIOS || kIsAndroid;
@@ -693,16 +686,14 @@ extension _TextEditingValueExtension on TextEditingValue {
       return this;
     }
     return copyWith(
-      text: '$_kPrefix$text',
-      selection: selection.copyWith(
-        baseOffset: selection.baseOffset + 1,
-        extentOffset: selection.extentOffset + 1,
-      ),
-      composing: composing.isValid ? TextRange(
-        start: composing.start + 1,
-        end: composing.end + 1
-      ) : composing
-    );
+        text: '$_kPrefix$text',
+        selection: selection.copyWith(
+          baseOffset: selection.baseOffset + 1,
+          extentOffset: selection.extentOffset + 1,
+        ),
+        composing: composing.isValid
+            ? TextRange(start: composing.start + 1, end: composing.end + 1)
+            : composing);
   }
 
   TextEditingValue removePrefixIfNecessary() {
@@ -713,22 +704,20 @@ extension _TextEditingValueExtension on TextEditingValue {
       return this;
     }
     return copyWith(
-      text: text.substring(1),
-      selection: selection.copyWith(
-        baseOffset: max(0, selection.baseOffset - 1),
-        extentOffset: max(0, selection.extentOffset - 1),
-      ),
-      composing: composing.isValid ? TextRange(
-        start: max(0, composing.start - 1),
-        end: max(0, composing.end - 1)
-      ) : null
-    );
+        text: text.substring(1),
+        selection: selection.copyWith(
+          baseOffset: max(0, selection.baseOffset - 1),
+          extentOffset: max(0, selection.extentOffset - 1),
+        ),
+        composing: composing.isValid
+            ? TextRange(
+                start: max(0, composing.start - 1),
+                end: max(0, composing.end - 1))
+            : null);
   }
-
 }
 
 class _TextInputConfiguration extends TextInputConfiguration {
-
   final int flutterViewId;
 
   const _TextInputConfiguration({
@@ -748,5 +737,4 @@ class _TextInputConfiguration extends TextInputConfiguration {
       'viewId': flutterViewId,
     };
   }
-
 }

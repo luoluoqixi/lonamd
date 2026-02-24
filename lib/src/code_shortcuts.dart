@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 enum CodeShortcutType {
   selectAll,
@@ -54,23 +54,21 @@ enum CodeShortcutType {
 }
 
 abstract class CodeShortcutsActivatorsBuilder {
-
   const CodeShortcutsActivatorsBuilder();
 
   List<ShortcutActivator>? build(CodeShortcutType type);
-
 }
 
-class DefaultCodeShortcutsActivatorsBuilder extends CodeShortcutsActivatorsBuilder {
-
+class DefaultCodeShortcutsActivatorsBuilder
+    extends CodeShortcutsActivatorsBuilder {
   const DefaultCodeShortcutsActivatorsBuilder();
 
   @override
   List<ShortcutActivator>? build(CodeShortcutType type) {
-    return kIsMacOS ? _kDefaultMacCodeShortcutsActivators[type] :
-      _kDefaultCommonCodeShortcutsActivators[type];
+    return kIsMacOS
+        ? _kDefaultMacCodeShortcutsActivators[type]
+        : _kDefaultCommonCodeShortcutsActivators[type];
   }
-
 }
 
 abstract class CodeShortcutEditableIntent extends Intent {
@@ -235,27 +233,45 @@ const Map<CodeShortcutType, Intent> kCodeShortcutIntents = {
   CodeShortcutType.lineMoveUp: ShortcutLineMoveIntent(VerticalDirection.up),
   CodeShortcutType.lineMoveDown: ShortcutLineMoveIntent(VerticalDirection.down),
   CodeShortcutType.cursorMoveUp: CodeShortcutCursorMoveIntent(AxisDirection.up),
-  CodeShortcutType.cursorMoveDown: CodeShortcutCursorMoveIntent(AxisDirection.down),
-  CodeShortcutType.cursorMoveForward: CodeShortcutCursorMoveIntent(AxisDirection.right),
-  CodeShortcutType.cursorMoveBackward: CodeShortcutCursorMoveIntent(AxisDirection.left),
-  CodeShortcutType.cursorMoveLineStart: CodeShortcutCursorMoveLineEdgeIntent(false),
-  CodeShortcutType.cursorMoveLineEnd: CodeShortcutCursorMoveLineEdgeIntent(true),
-  CodeShortcutType.cursorMovePageStart: CodeShortcutCursorMoveDocEdgeIntent(false),
+  CodeShortcutType.cursorMoveDown:
+      CodeShortcutCursorMoveIntent(AxisDirection.down),
+  CodeShortcutType.cursorMoveForward:
+      CodeShortcutCursorMoveIntent(AxisDirection.right),
+  CodeShortcutType.cursorMoveBackward:
+      CodeShortcutCursorMoveIntent(AxisDirection.left),
+  CodeShortcutType.cursorMoveLineStart:
+      CodeShortcutCursorMoveLineEdgeIntent(false),
+  CodeShortcutType.cursorMoveLineEnd:
+      CodeShortcutCursorMoveLineEdgeIntent(true),
+  CodeShortcutType.cursorMovePageStart:
+      CodeShortcutCursorMoveDocEdgeIntent(false),
   CodeShortcutType.cursorMovePageEnd: CodeShortcutCursorMoveDocEdgeIntent(true),
   CodeShortcutType.cursorMovePageUp: CodeShortcutCursorMovePageIntent(false),
   CodeShortcutType.cursorMovePageDown: CodeShortcutCursorMovePageIntent(true),
-  CodeShortcutType.cursorMoveWordBoundaryForward: CodeShortcutCursorMoveWordBoundaryIntent(true),
-  CodeShortcutType.cursorMoveWordBoundaryBackward: CodeShortcutCursorMoveWordBoundaryIntent(false),
-  CodeShortcutType.selectionExtendUp: CodeShortcutSelectionExtendIntent(AxisDirection.up),
-  CodeShortcutType.selectionExtendDown: CodeShortcutSelectionExtendIntent(AxisDirection.down),
-  CodeShortcutType.selectionExtendForward: CodeShortcutSelectionExtendIntent(AxisDirection.right),
-  CodeShortcutType.selectionExtendBackward: CodeShortcutSelectionExtendIntent(AxisDirection.left),
-  CodeShortcutType.selectionExtendLineStart: CodeShortcutSelectionExtendLineEdgeIntent(false),
-  CodeShortcutType.selectionExtendLineEnd: CodeShortcutSelectionExtendLineEdgeIntent(true),
-  CodeShortcutType.selectionExtendPageStart: CodeShortcutSelectionExtendPageEdgeIntent(false),
-  CodeShortcutType.selectionExtendPageEnd: CodeShortcutSelectionExtendPageEdgeIntent(true),
-  CodeShortcutType.selectionExtendWordBoundaryForward: CodeShortcutSelectionExtendWordBoundaryIntent(true),
-  CodeShortcutType.selectionExtendWordBoundaryBackward: CodeShortcutSelectionExtendWordBoundaryIntent(false),
+  CodeShortcutType.cursorMoveWordBoundaryForward:
+      CodeShortcutCursorMoveWordBoundaryIntent(true),
+  CodeShortcutType.cursorMoveWordBoundaryBackward:
+      CodeShortcutCursorMoveWordBoundaryIntent(false),
+  CodeShortcutType.selectionExtendUp:
+      CodeShortcutSelectionExtendIntent(AxisDirection.up),
+  CodeShortcutType.selectionExtendDown:
+      CodeShortcutSelectionExtendIntent(AxisDirection.down),
+  CodeShortcutType.selectionExtendForward:
+      CodeShortcutSelectionExtendIntent(AxisDirection.right),
+  CodeShortcutType.selectionExtendBackward:
+      CodeShortcutSelectionExtendIntent(AxisDirection.left),
+  CodeShortcutType.selectionExtendLineStart:
+      CodeShortcutSelectionExtendLineEdgeIntent(false),
+  CodeShortcutType.selectionExtendLineEnd:
+      CodeShortcutSelectionExtendLineEdgeIntent(true),
+  CodeShortcutType.selectionExtendPageStart:
+      CodeShortcutSelectionExtendPageEdgeIntent(false),
+  CodeShortcutType.selectionExtendPageEnd:
+      CodeShortcutSelectionExtendPageEdgeIntent(true),
+  CodeShortcutType.selectionExtendWordBoundaryForward:
+      CodeShortcutSelectionExtendWordBoundaryIntent(true),
+  CodeShortcutType.selectionExtendWordBoundaryBackward:
+      CodeShortcutSelectionExtendWordBoundaryIntent(false),
   CodeShortcutType.wordDeleteForward: ShortcutWordDeleteDirectionIntent(true),
   CodeShortcutType.wordDeleteBackward: ShortcutWordDeleteDirectionIntent(false),
   CodeShortcutType.indent: CodeShortcutIndentIntent(),
@@ -272,30 +288,29 @@ const Map<CodeShortcutType, Intent> kCodeShortcutIntents = {
   CodeShortcutType.esc: CodeShortcutEscIntent(),
 };
 
-const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultMacCodeShortcutsActivators = {
+const Map<CodeShortcutType, List<ShortcutActivator>>
+    _kDefaultMacCodeShortcutsActivators = {
   CodeShortcutType.selectAll: [
     SingleActivator(LogicalKeyboardKey.keyA, meta: true)
   ],
-  CodeShortcutType.cut: [
-    SingleActivator(LogicalKeyboardKey.keyX, meta: true)
-  ],
-  CodeShortcutType.copy: [
-    SingleActivator(LogicalKeyboardKey.keyC, meta: true)
-  ],
+  CodeShortcutType.cut: [SingleActivator(LogicalKeyboardKey.keyX, meta: true)],
+  CodeShortcutType.copy: [SingleActivator(LogicalKeyboardKey.keyC, meta: true)],
   CodeShortcutType.paste: [
     SingleActivator(LogicalKeyboardKey.keyV, meta: true)
   ],
   CodeShortcutType.delete: [
-    SingleActivator(LogicalKeyboardKey.delete,),
+    SingleActivator(
+      LogicalKeyboardKey.delete,
+    ),
     SingleActivator(LogicalKeyboardKey.delete, shift: true),
   ],
   CodeShortcutType.backspace: [
-    SingleActivator(LogicalKeyboardKey.backspace,),
+    SingleActivator(
+      LogicalKeyboardKey.backspace,
+    ),
     SingleActivator(LogicalKeyboardKey.backspace, shift: true),
   ],
-  CodeShortcutType.undo: [
-    SingleActivator(LogicalKeyboardKey.keyZ, meta: true)
-  ],
+  CodeShortcutType.undo: [SingleActivator(LogicalKeyboardKey.keyZ, meta: true)],
   CodeShortcutType.redo: [
     SingleActivator(LogicalKeyboardKey.keyZ, meta: true, shift: true)
   ],
@@ -317,9 +332,7 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultMacCodeShortcutsAc
   CodeShortcutType.lineMoveDown: [
     SingleActivator(LogicalKeyboardKey.arrowDown, alt: true)
   ],
-  CodeShortcutType.cursorMoveUp: [
-    SingleActivator(LogicalKeyboardKey.arrowUp)
-  ],
+  CodeShortcutType.cursorMoveUp: [SingleActivator(LogicalKeyboardKey.arrowUp)],
   CodeShortcutType.cursorMoveDown: [
     SingleActivator(LogicalKeyboardKey.arrowDown)
   ],
@@ -395,9 +408,7 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultMacCodeShortcutsAc
     SingleActivator(LogicalKeyboardKey.backspace, alt: true, shift: true),
     SingleActivator(LogicalKeyboardKey.backspace, meta: true, shift: true)
   ],
-  CodeShortcutType.indent: [
-    SingleActivator(LogicalKeyboardKey.tab)
-  ],
+  CodeShortcutType.indent: [SingleActivator(LogicalKeyboardKey.tab)],
   CodeShortcutType.outdent: [
     SingleActivator(LogicalKeyboardKey.tab, shift: true)
   ],
@@ -416,9 +427,7 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultMacCodeShortcutsAc
   CodeShortcutType.multiLineComment: [
     SingleActivator(LogicalKeyboardKey.slash, meta: true, shift: true)
   ],
-  CodeShortcutType.find: [
-    SingleActivator(LogicalKeyboardKey.keyF, meta: true)
-  ],
+  CodeShortcutType.find: [SingleActivator(LogicalKeyboardKey.keyF, meta: true)],
   CodeShortcutType.findToggleMatchCase: [
     SingleActivator(LogicalKeyboardKey.keyC, meta: true, alt: true)
   ],
@@ -428,15 +437,12 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultMacCodeShortcutsAc
   CodeShortcutType.replace: [
     SingleActivator(LogicalKeyboardKey.keyF, meta: true, alt: true)
   ],
-  CodeShortcutType.save: [
-    SingleActivator(LogicalKeyboardKey.keyS, meta: true)
-  ],
-  CodeShortcutType.esc: [
-    SingleActivator(LogicalKeyboardKey.escape)
-  ],
+  CodeShortcutType.save: [SingleActivator(LogicalKeyboardKey.keyS, meta: true)],
+  CodeShortcutType.esc: [SingleActivator(LogicalKeyboardKey.escape)],
 };
 
-const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultCommonCodeShortcutsActivators = {
+const Map<CodeShortcutType, List<ShortcutActivator>>
+    _kDefaultCommonCodeShortcutsActivators = {
   CodeShortcutType.selectAll: [
     SingleActivator(LogicalKeyboardKey.keyA, control: true)
   ],
@@ -450,11 +456,15 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultCommonCodeShortcut
     SingleActivator(LogicalKeyboardKey.keyV, control: true)
   ],
   CodeShortcutType.delete: [
-    SingleActivator(LogicalKeyboardKey.delete,),
+    SingleActivator(
+      LogicalKeyboardKey.delete,
+    ),
     SingleActivator(LogicalKeyboardKey.delete, shift: true),
   ],
   CodeShortcutType.backspace: [
-    SingleActivator(LogicalKeyboardKey.backspace,),
+    SingleActivator(
+      LogicalKeyboardKey.backspace,
+    ),
     SingleActivator(LogicalKeyboardKey.backspace, shift: true),
   ],
   CodeShortcutType.undo: [
@@ -481,9 +491,7 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultCommonCodeShortcut
   CodeShortcutType.lineMoveDown: [
     SingleActivator(LogicalKeyboardKey.arrowDown, alt: true)
   ],
-  CodeShortcutType.cursorMoveUp: [
-    SingleActivator(LogicalKeyboardKey.arrowUp)
-  ],
+  CodeShortcutType.cursorMoveUp: [SingleActivator(LogicalKeyboardKey.arrowUp)],
   CodeShortcutType.cursorMoveDown: [
     SingleActivator(LogicalKeyboardKey.arrowDown)
   ],
@@ -555,9 +563,7 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultCommonCodeShortcut
     SingleActivator(LogicalKeyboardKey.backspace, alt: true, shift: true),
     SingleActivator(LogicalKeyboardKey.backspace, control: true),
   ],
-  CodeShortcutType.indent: [
-    SingleActivator(LogicalKeyboardKey.tab)
-  ],
+  CodeShortcutType.indent: [SingleActivator(LogicalKeyboardKey.tab)],
   CodeShortcutType.outdent: [
     SingleActivator(LogicalKeyboardKey.tab, shift: true)
   ],
@@ -591,7 +597,5 @@ const Map<CodeShortcutType, List<ShortcutActivator>> _kDefaultCommonCodeShortcut
   CodeShortcutType.save: [
     SingleActivator(LogicalKeyboardKey.keyS, control: true)
   ],
-  CodeShortcutType.esc: [
-    SingleActivator(LogicalKeyboardKey.escape)
-  ],
+  CodeShortcutType.esc: [SingleActivator(LogicalKeyboardKey.escape)],
 };

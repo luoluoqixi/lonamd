@@ -1,4 +1,4 @@
-library re_editor;
+library lonamd;
 
 import 'dart:async';
 import 'dart:math';
@@ -13,7 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
-import 'package:re_highlight/re_highlight.dart';
+import 'package:lonamd/highlight.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
 part '_code_floating_cursor.dart';

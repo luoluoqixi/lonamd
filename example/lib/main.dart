@@ -1,9 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:re_editor_exmaple/editor_autocomplete.dart';
-import 'package:re_editor_exmaple/editor_basic_field.dart';
-import 'package:re_editor_exmaple/editor_json.dart';
-import 'package:re_editor_exmaple/editor_large_text.dart';
+
+import 'package:lonamd_exmaple/editor_autocomplete.dart';
+import 'package:lonamd_exmaple/editor_basic_field.dart';
+import 'package:lonamd_exmaple/editor_json.dart';
+import 'package:lonamd_exmaple/editor_large_text.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,10 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Re-Editor',
       theme: ThemeData(
-        colorScheme: const ColorScheme.light(
-          primary: Color.fromARGB(255, 255, 140, 0),
-        )
-      ),
+          colorScheme: const ColorScheme.light(
+        primary: Color.fromARGB(255, 255, 140, 0),
+      )),
       home: const MyHomePage(title: 'Re-Editor Demo Page'),
     );
   }
@@ -46,7 +46,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   static const Map<String, Widget> _editors = {
     'Basic Field': BasicField(),
     'Json Editor': JsonEditor(),
@@ -64,42 +63,36 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Container(
-        margin: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _editors.entries.mapIndexed((index, entry) {
-                  return TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _index = index;
-                      });
-                    },
-                    child: Text(
-                      entry.key,
-                      style: TextStyle(
-                        color: _index == index ? null : Colors.black
+          margin: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _editors.entries.mapIndexed((index, entry) {
+                    return TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _index = index;
+                        });
+                      },
+                      child: Text(
+                        entry.key,
+                        style: TextStyle(
+                            color: _index == index ? null : Colors.black),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey
-                  )
+                    );
+                  }).toList(),
                 ),
+              ),
+              Expanded(
+                  child: Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.grey)),
                 child: child,
-              )
-            )
-          ],
-        )
-      ),
+              ))
+            ],
+          )),
     );
   }
 }

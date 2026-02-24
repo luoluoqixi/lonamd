@@ -1,4 +1,4 @@
-part of re_editor;
+part of lonamd;
 
 typedef IsolateRunnable<Req, Res> = Res Function(Req req);
 typedef IsolateCallback<Res> = void Function(Res res);

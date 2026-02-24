@@ -1,21 +1,17 @@
-part of re_editor;
+part of lonamd;
 
 abstract class CodeCommentFormatter {
-
-  CodeLineEditingValue format(CodeLineEditingValue value, String indent, bool single);
-
+  CodeLineEditingValue format(
+      CodeLineEditingValue value, String indent, bool single);
 }
 
 abstract class DefaultCodeCommentFormatter implements CodeCommentFormatter {
-
-  factory DefaultCodeCommentFormatter({
-    String? singleLinePrefix, 
-    String? multiLinePrefix,
-    String? multiLineSuffix
-  }) => _DefaultCodeCommentFormatter(
-    singleLinePrefix: singleLinePrefix,
-    multiLinePrefix: multiLinePrefix,
-    multiLineSuffix: multiLineSuffix
-  );
-
+  factory DefaultCodeCommentFormatter(
+          {String? singleLinePrefix,
+          String? multiLinePrefix,
+          String? multiLineSuffix}) =>
+      _DefaultCodeCommentFormatter(
+          singleLinePrefix: singleLinePrefix,
+          multiLinePrefix: multiLinePrefix,
+          multiLineSuffix: multiLineSuffix);
 }
