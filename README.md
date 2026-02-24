@@ -1,3 +1,9 @@
+# LonaMD
+
+Flutter Markdown Editor Based on Re-Editor, Providing a Smooth Editing Experience Similar to Obsidian.
+
+In development...
+
 # Re-Editor
 
 [![latest version](https://img.shields.io/pub/v/re_editor.svg?color=blue)](https://pub.dev/packages/re_editor)
@@ -147,6 +153,7 @@ CodeEditor(
 `Re-Editor` has the built-in default shortcut hotkeys, and developers can also use `shortcutsActivatorsBuilder` to set custom shortcut hotkeys. Of course, the shortcut keys only work on the desktop.
 
 The shortcut keys supported by `Re-Editor` are as follows:
+
 - Select all (Control/Command + A)
 - Cut selected/current line (Control/Command + V)
 - Copy selected/current line (Control/Command + C)

@@ -1,3 +1,9 @@
+# LonaMD
+
+基于 Re-Editor 的 Flutter Markdown 编辑器，提供类似 Obsidian 的流畅编辑体验。
+
+开发中...
+
 # Re-Editor
 
 [![latest version](https://img.shields.io/pub/v/re_editor.svg?color=blue)](https://pub.dev/packages/re_editor)
@@ -33,6 +39,7 @@ dependencies:
 ```
 
 和`TextField`一样，`Re-Editor`使用`CodeLineEditingController`作为控制器，下面的示例代码创建了一个最简单的编辑器组件，在显示样式上和`TextField`并没有什么太大的区别。
+
 ```dart
 Widget build(BuildContext context) {
   return CodeEditor(
@@ -44,6 +51,7 @@ Widget build(BuildContext context) {
 ### 文本高亮
 
 `Re-Editor`的文本高亮是基于[Re-Highlight](https://github.com/reqable/re-highlight)实现，支持近百种语言和主题样式，开发者可以自由选择并配置代码高亮。下面的代码就指定了`JSON`语法高亮规则以及应用了`Atom One Light`代码配色。
+
 ```dart
 CodeEditor(
   style: CodeEditorStyle(
@@ -62,6 +70,7 @@ CodeEditor(
 ### 行号以及折叠/展开标记
 
 `Re-Editor`支持配置是否显示代码行号和代码折叠标记，也可以由开发者自行实现显示样式和排版。下面的示例代码显示了默认的样式，通过`indicatorBuilder`来构建。
+
 ```dart
 CodeEditor(
   indicatorBuilder: (context, editingController, chunkController, notifier) {
@@ -85,6 +94,7 @@ CodeEditor(
 ### 代码折叠展开检测
 
 默认情况下，`Re-Editor`会自动检测`{}`和`[]`的折叠区域，开发者可以控制是否检测，也可以自行编写检测规则。`DefaultCodeChunkAnalyzer`是默认的检测器，如果希望禁用检测，可以使用`NonCodeChunkAnalyzer`。
+
 ```dart
 CodeEditor(
   chunkAnalyzer: DefaultCodeChunkAnalyzer(),
@@ -105,6 +115,7 @@ abstract class CodeChunkAnalyzer {
 ### 滚动控制
 
 `Re-Editor`支持双向滚动，因此使用了两个`ScrollController`，开发者可以用`CodeScrollController`进行构造。
+
 ```dart
 CodeEditor(
   scrollController: CodeScrollController(
@@ -141,6 +152,7 @@ CodeEditor(
 `Re-Editor`内置了默认的快捷键功能，开发者也可以使用`shortcutsActivatorsBuilder`来设置自定义的快捷热键。当然，快捷键功能仅在桌面端有效。
 
 `Re-Editor`支持的快捷键功能如下：
+
 - 全选（Control/Command + A）
 - 剪切选中/当前行（Control/Command + V）
 - 复制选中/当前行（Control/Command + C）
