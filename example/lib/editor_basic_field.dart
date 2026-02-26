@@ -6,10 +6,9 @@ class BasicField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CodeEditor(
-      wordWrap: false,
+    return CodeEditorHelper.createEditor(
       controller: CodeLineEditingController.fromText(
-          ('${'Hello Reqable💐👏 ' * 10}\n') * 100),
+          ('${'Hello LonaMD💐👏 ' * 10}\n') * 100),
     );
   }
 }

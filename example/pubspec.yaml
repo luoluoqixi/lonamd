@@ -62,3 +62,4 @@ flutter:
     - assets/code.json
     - assets/code.dart
     - assets/large.txt
+    - assets/markdown.md

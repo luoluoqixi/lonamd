@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:lonamd_exmaple/editor_autocomplete.dart';
 import 'package:lonamd_exmaple/editor_basic_field.dart';
+import 'package:lonamd_exmaple/editor_markdown.dart';
 import 'package:lonamd_exmaple/editor_json.dart';
 import 'package:lonamd_exmaple/editor_large_text.dart';
 
@@ -17,12 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Re-Editor',
+      title: 'LonaMD Editor Demo',
       theme: ThemeData(
           colorScheme: const ColorScheme.light(
         primary: Color.fromARGB(255, 255, 140, 0),
       )),
-      home: const MyHomePage(title: 'Re-Editor Demo Page'),
+      home: const MyHomePage(title: 'LonaMD Demo Page'),
     );
   }
 }
@@ -48,12 +49,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const Map<String, Widget> _editors = {
     'Basic Field': BasicField(),
+    'Markdown Editor': MarkdownEditor(),
     'Json Editor': JsonEditor(),
     'Auto Complete': AutoCompleteEditor(),
     'Large Text': LargeTextEditor(),
   };
 
-  int _index = 0;
+  int _index = 1;
 
   @override
   Widget build(BuildContext context) {

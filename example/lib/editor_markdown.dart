@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lonamd/lonamd.dart';
-import 'package:lonamd/highlight/languages/json.dart';
-import 'package:lonamd/highlight/styles/atom-one-light.dart';
 
 import 'package:lonamd_exmaple/find.dart';
 import 'package:lonamd_exmaple/menu.dart';
 
-class JsonEditor extends StatefulWidget {
-  const JsonEditor({super.key});
+class MarkdownEditor extends StatefulWidget {
+  const MarkdownEditor({super.key});
 
   @override
-  State<StatefulWidget> createState() => _JsonEditorState();
+  State<StatefulWidget> createState() => _MarkdownEditorState();
 }
 
-class _JsonEditorState extends State<JsonEditor> {
+class _MarkdownEditorState extends State<MarkdownEditor> {
   final CodeLineEditingController _controller = CodeLineEditingController();
 
   @override
   void initState() {
-    rootBundle.loadString('assets/code.json').then((value) {
+    rootBundle.loadString('assets/markdown.md').then((value) {
       _controller.text = value;
     });
     super.initState();
@@ -27,12 +25,7 @@ class _JsonEditorState extends State<JsonEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return CodeEditorHelper.createEditor(
-      style: CodeEditorStyle(
-        codeTheme: CodeHighlightTheme(
-            languages: {'json': CodeHighlightThemeMode(mode: langJson)},
-            theme: atomOneLightTheme),
-      ),
+    return CodeEditorHelper.createMarkdownEditor(
       controller: _controller,
       findBuilder: (context, controller, readOnly) =>
           CodeFindPanelView(controller: controller, readOnly: readOnly),

@@ -25,22 +25,8 @@ class _LargeTextEditorState extends State<LargeTextEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return CodeEditor(
+    return CodeEditorHelper.createEditor(
       controller: _controller,
-      wordWrap: false,
-      indicatorBuilder:
-          (context, editingController, chunkController, notifier) {
-        return Row(
-          children: [
-            DefaultCodeLineNumber(
-              controller: editingController,
-              notifier: notifier,
-            ),
-            DefaultCodeChunkIndicator(
-                width: 20, controller: chunkController, notifier: notifier)
-          ],
-        );
-      },
       findBuilder: (context, controller, readOnly) =>
           CodeFindPanelView(controller: controller, readOnly: readOnly),
       toolbarController: const ContextMenuControllerImpl(),

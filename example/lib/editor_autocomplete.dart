@@ -57,7 +57,8 @@ class _AutoCompleteEditorState extends State<AutoCompleteEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return CodeAutocomplete(
+    return CodeEditorHelper.createEditor(
+      autocomplete: AutocompleteConfig(
         viewBuilder: (context, notifier, onSelected) {
           return _DefaultCodeAutocompleteListView(
             notifier: notifier,
@@ -78,33 +79,19 @@ class _AutoCompleteEditorState extends State<AutoCompleteEditor> {
             'bar': _kStringPrompts,
           },
         ),
-        child: CodeEditor(
-          style: CodeEditorStyle(
-            fontSize: 18,
-            codeTheme: CodeHighlightTheme(
-                languages: {'dart': CodeHighlightThemeMode(mode: langDart)},
-                theme: atomOneLightTheme),
-          ),
-          controller: _controller,
-          wordWrap: false,
-          indicatorBuilder:
-              (context, editingController, chunkController, notifier) {
-            return Row(
-              children: [
-                DefaultCodeLineNumber(
-                  controller: editingController,
-                  notifier: notifier,
-                ),
-                DefaultCodeChunkIndicator(
-                    width: 20, controller: chunkController, notifier: notifier)
-              ],
-            );
-          },
-          findBuilder: (context, controller, readOnly) =>
-              CodeFindPanelView(controller: controller, readOnly: readOnly),
-          toolbarController: const ContextMenuControllerImpl(),
-          sperator: Container(width: 1, color: Colors.blue),
-        ));
+      ),
+      style: CodeEditorStyle(
+        fontSize: 18,
+        codeTheme: CodeHighlightTheme(
+            languages: {'dart': CodeHighlightThemeMode(mode: langDart)},
+            theme: atomOneLightTheme),
+      ),
+      controller: _controller,
+      findBuilder: (context, controller, readOnly) =>
+          CodeFindPanelView(controller: controller, readOnly: readOnly),
+      toolbarController: const ContextMenuControllerImpl(),
+      sperator: Container(width: 1, color: Colors.blue),
+    );
   }
 }
 
