@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lonamd/lonamd.dart';
 
@@ -28,6 +30,9 @@ class ContextMenuControllerImpl implements SelectionToolbarController {
     required LayerLink layerLink,
     required ValueNotifier<bool> visibility,
   }) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return;
+    }
     showMenu(
         context: context,
         position: RelativeRect.fromSize(
