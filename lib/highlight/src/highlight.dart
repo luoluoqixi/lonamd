@@ -4,7 +4,6 @@ const int _kNoMatch = -1;
 const int _kMaxKeywordHits = 7;
 
 class Highlight {
-
   final List<HLPlugin> _plugins;
   final Map<String, Mode> _languages;
   final Map<String, String> _aliases;
@@ -12,10 +11,11 @@ class Highlight {
   // even if a single syntax or parse hits a fatal error
   bool _safeMode;
 
-  Highlight(): _plugins = [],
-    _languages = {},
-    _aliases = {},
-    _safeMode = true;
+  Highlight()
+      : _plugins = [],
+        _languages = {},
+        _aliases = {},
+        _safeMode = true;
 
   void debugMode() {
     _safeMode = false;
@@ -25,15 +25,12 @@ class Highlight {
     _safeMode = true;
   }
 
-  HighlightResult highlight({
-    required String code,
-    required String language,
-    bool ignoreIllegals = true
-  }) {
-    final BeforeHighlightContext context = BeforeHighlightContext(
-      code: code,
-      language: language
-    );
+  HighlightResult highlight(
+      {required String code,
+      required String language,
+      bool ignoreIllegals = true}) {
+    final BeforeHighlightContext context =
+        BeforeHighlightContext(code: code, language: language);
     // the plugin can change the desired language or the code to be highlighted
     // just be changing the object it was passed
     for (HLPlugin plugin in _plugins) {
@@ -43,7 +40,7 @@ class Highlight {
     // a before plugin can usurp the result completely by providing it's own
     // in which case we don't even need to call highlight
     final HighlightResult result = context.result ??
-      _highlight(context.language, context.code, ignoreIllegals);
+        _highlight(context.language, context.code, ignoreIllegals);
 
     result.code = context.code;
     // the plugin can change anything in result to suite it
@@ -66,16 +63,11 @@ class Highlight {
   /// auto-detection may not find a better match
   HighlightResult justTextHighlightResult(String code) {
     final HighlightResult result = HighlightResult(
-      code: code,
-      illegal: false,
-      relevance: 0,
-      emitter: _TokenTreeEmitter(),
-      top: Mode(
-        disableAutodetect: true,
-        name: 'Plain text',
-        contains: []
-      )
-    );
+        code: code,
+        illegal: false,
+        relevance: 0,
+        emitter: _TokenTreeEmitter(),
+        top: Mode(disableAutodetect: true, name: 'Plain text', contains: []));
     result._emitter.addText(code);
     return result;
   }
@@ -88,14 +80,15 @@ class Highlight {
   /// - value (an HTML string with highlighting markup)
   /// - secondBest (object with the same structure for second-best heuristically
   ///   detected language, may be absent)
-  AutoHighlightResult highlightAuto(String code, [List<String>? languageSubset]) {
+  AutoHighlightResult highlightAuto(String code,
+      [List<String>? languageSubset]) {
     final List<String> languages = languageSubset ?? _languages.keys.toList();
     final HighlightResult plaintext = justTextHighlightResult(code);
     final List<HighlightResult> results = languages
-      .where((e) => getLanguage(e) != null)
-      .where((e) => autoDetection(e))
-      .map((name) => _highlight(name, code, false))
-      .toList();
+        .where((e) => getLanguage(e) != null)
+        .where((e) => autoDetection(e))
+        .map((name) => _highlight(name, code, false))
+        .toList();
     results.insert(0, plaintext); // plaintext is always an option
     // Dart's list.sort() is not stable, here we need a stable sort
     mergeSort<HighlightResult>(results, compare: (a, b) {
@@ -122,7 +115,7 @@ class Highlight {
     });
     return AutoHighlightResult(
       best: results[0],
-      secondBest: results.length > 1 ? results[1]: null,
+      secondBest: results.length > 1 ? results[1] : null,
     );
   }
 
@@ -169,7 +162,9 @@ class Highlight {
   }
 
   /// private highlight that's used internally and does not fire callbacks
-  HighlightResult _highlight(String languageName, String codeToHighlight, bool ignoreIllegals, [Mode? continuation]) {
+  HighlightResult _highlight(
+      String languageName, String codeToHighlight, bool ignoreIllegals,
+      [Mode? continuation]) {
     final Map<String, int> keywordHits = {};
     final Mode? language = getLanguage(languageName);
     if (language == null) {
@@ -184,6 +179,7 @@ class Highlight {
     int index = 0;
     int iterations = 0;
     bool resumeScanAtSamePosition = false;
+
     /// Return keyword data if a match is a keyword
     _KeywordData? keywordData(Mode mode, String matchText) {
       return mode.keywords[matchText];
@@ -209,7 +205,8 @@ class Highlight {
       while (match != null) {
         buf += modeBuffer.substring(lastIndex, match.start);
         final String match0 = match[0]!;
-        final String word = language.caseInsensitive == true ? match0.toLowerCase() : match0;
+        final String word =
+            language.caseInsensitive == true ? match0.toLowerCase() : match0;
         final _KeywordData? data = keywordData(top, word);
         if (data != null) {
           final String kind = data.scopeName;
@@ -233,9 +230,8 @@ class Highlight {
           buf += match0;
         }
         lastIndex = match.end;
-        match = top.keywordPatternRe!
-          .allMatches(modeBuffer, lastIndex)
-          .firstOrNull;
+        match =
+            top.keywordPatternRe!.allMatches(modeBuffer, lastIndex).firstOrNull;
       }
       buf += modeBuffer.substring(lastIndex);
       emitter.addText(buf);
@@ -251,12 +247,15 @@ class Highlight {
           emitter.addText(modeBuffer);
           return;
         }
-        result = _highlight(top.subLanguage, modeBuffer, true, continuations[top.subLanguage]);
+        result = _highlight(
+            top.subLanguage, modeBuffer, true, continuations[top.subLanguage]);
         continuations[top.subLanguage] = result._top;
       } else if (top.subLanguage is List<String>) {
-        result = highlightAuto(modeBuffer, top.subLanguage.isEmpty ? null : top.subLanguage);
+        result = highlightAuto(
+            modeBuffer, top.subLanguage.isEmpty ? null : top.subLanguage);
       } else {
-        throw AssertionError('Illegal subLanguage type ${top.subLanguage.runtimeType}');
+        throw AssertionError(
+            'Illegal subLanguage type ${top.subLanguage.runtimeType}');
       }
 
       // Counting embedded language score towards the host language may be disabled
@@ -301,14 +300,17 @@ class Highlight {
     }
 
     Mode startNewMode(Mode mode, EnhancedMatch match) {
-      if (mode.scope != null && mode.scope is String && mode.scope!.isNotEmpty) {
+      if (mode.scope != null &&
+          mode.scope is String &&
+          mode.scope!.isNotEmpty) {
         emitter.openNode(language.classNameAliases?[mode.scope!] ?? mode.scope);
       }
       if (mode.beginScope != null) {
         final _CompiledScope scope = mode.beginScope;
         // beginScope just wraps the begin match itself in a scope
         if (scope.wrap?.isNotEmpty ?? false) {
-          emitKeyword(modeBuffer, language.classNameAliases?[scope.wrap!] ?? scope.wrap!);
+          emitKeyword(modeBuffer,
+              language.classNameAliases?[scope.wrap!] ?? scope.wrap!);
           modeBuffer = '';
         } else if (scope.multi == true) {
           // at this point modeBuffer should just be the match
@@ -316,16 +318,13 @@ class Highlight {
           modeBuffer = '';
         }
       }
-      top = mode.copyWith(
-        Mode(
-          parent: top
-        )
-      );
+      top = mode.copyWith(Mode(parent: top));
       return top;
     }
 
     Mode? endOfMode(Mode mode, EnhancedMatch match, String matchPlusRemainder) {
-      bool matched = mode.endRe != null && matchPlusRemainder.startsWith(mode.endRe!);
+      bool matched =
+          mode.endRe != null && matchPlusRemainder.startsWith(mode.endRe!);
       if (matched) {
         if (mode.onEnd != null) {
           final ModeCallbackResponse resp = ModeCallbackResponse(mode);
@@ -446,7 +445,9 @@ class Highlight {
 
     void processContinuations() {
       final List<String> list = [];
-      for (Mode? current = top; current != language; current = current?.parent) {
+      for (Mode? current = top;
+          current != language;
+          current = current?.parent) {
         if (current?.scope?.isNotEmpty ?? false) {
           list.insert(0, current!.scope);
         }
@@ -473,14 +474,17 @@ class Highlight {
       // this happens when we have badly behaved rules that have optional matchers to the degree that
       // sometimes they can end up matching nothing at all
       // Ref: https://github.com/highlightjs/highlight.js/issues/2140
-      if (lastMatch?.type == "begin" && match?.type == "end" && lastMatch?.index == match!.index && lexeme.isEmpty) {
+      if (lastMatch?.type == "begin" &&
+          match?.type == "end" &&
+          lastMatch?.index == match!.index &&
+          lexeme.isEmpty) {
         // spit the "skipped" character that our regex choked on back into the output sequence
         modeBuffer += codeToHighlight.substring(match.index, match.index + 1);
         if (!_safeMode) {
           final AnnotatedError err = AnnotatedError(
-            '0 width match regex ($languageName)',
-            languageName: languageName,
-            badRule: lastMatch!.rule);
+              '0 width match regex ($languageName)',
+              languageName: languageName,
+              badRule: lastMatch!.rule);
           throw err;
         }
         return 1;
@@ -491,9 +495,9 @@ class Highlight {
         return doBeginMatch(match!);
       } else if (match?.type == "illegal" && !ignoreIllegals) {
         // illegal match, we do not continue processing
-        final err =  AnnotatedError('Illegal lexeme "$lexeme" for mode "${top.scope ?? '<unnamed>'}"',
-          mode: top
-        );
+        final err = AnnotatedError(
+            'Illegal lexeme "$lexeme" for mode "${top.scope ?? '<unnamed>'}"',
+            mode: top);
         throw err;
       } else if (match?.type == "end") {
         final int processed = doEndMatch(match!);
@@ -515,7 +519,8 @@ class Highlight {
       // parsing) still 3x behind our index then something is very wrong
       // so we bail
       if (iterations > 100000 && iterations > match!.index * 3) {
-        final AssertionError err = AssertionError('potential infinite loop, way more iterations than matches');
+        final AssertionError err = AssertionError(
+            'potential infinite loop, way more iterations than matches');
         throw err;
       }
 
@@ -537,7 +542,8 @@ class Highlight {
       (top.matcher! as _ResumableMultiRegex).considerAll();
 
       for (;;) {
-        final _ResumableMultiRegex matcher = top.matcher! as _ResumableMultiRegex;
+        final _ResumableMultiRegex matcher =
+            top.matcher! as _ResumableMultiRegex;
         iterations++;
         if (resumeScanAtSamePosition) {
           // only regexes not matched previously will now be
@@ -553,59 +559,55 @@ class Highlight {
           break;
         }
 
-        final String beforeMatch = codeToHighlight.substring(index, match.index);
+        final String beforeMatch =
+            codeToHighlight.substring(index, match.index);
         final int processedCount = processLexeme(beforeMatch, match);
         index = match.index + processedCount;
       }
       processLexeme(codeToHighlight.substring(index));
       emitter.finalize();
       return HighlightResult(
-        code: codeToHighlight,
-        language: languageName,
-        relevance: relevance,
-        illegal: false,
-        emitter: emitter,
-        top: top
-      );
+          code: codeToHighlight,
+          language: languageName,
+          relevance: relevance,
+          illegal: false,
+          emitter: emitter,
+          top: top);
     } on Error catch (err) {
       if (err is AnnotatedError && err.message.contains('Illegal')) {
         return HighlightResult(
-          code: codeToHighlight,
-          language: languageName,
-          illegal: true,
-          relevance: 0,
-          illegalBy: IllegalData(
-            message: err.message,
-            index: index,
-            context: codeToHighlight.substring(max(0, index - 100), min(index + 100, codeToHighlight.length)),
-            mode: err.mode,
-          ),
-          emitter: emitter
-        );
+            code: codeToHighlight,
+            language: languageName,
+            illegal: true,
+            relevance: 0,
+            illegalBy: IllegalData(
+              message: err.message,
+              index: index,
+              context: codeToHighlight.substring(max(0, index - 100),
+                  min(index + 100, codeToHighlight.length)),
+              mode: err.mode,
+            ),
+            emitter: emitter);
       } else if (_safeMode) {
         return HighlightResult(
-          code: codeToHighlight,
-          language: languageName,
-          illegal: false,
-          relevance: 0,
-          errorRaised: err,
-          emitter: emitter,
-          top: top
-        );
+            code: codeToHighlight,
+            language: languageName,
+            illegal: false,
+            relevance: 0,
+            errorRaised: err,
+            emitter: emitter,
+            top: top);
       } else {
         rethrow;
       }
     }
   }
-
 }
 
 abstract class HLPlugin {
-
   void afterHighlight(HighlightResult result);
 
   void beforeHighlight(BeforeHighlightContext context);
-
 }
 
 class BeforeHighlightContext {
@@ -613,15 +615,11 @@ class BeforeHighlightContext {
   String language;
   HighlightResult? result;
 
-  BeforeHighlightContext({
-    required this.code,
-    required this.language,
-    this.result
-  });
+  BeforeHighlightContext(
+      {required this.code, required this.language, this.result});
 }
 
 class HighlightResult {
-
   String code;
   double relevance;
   String? language;
@@ -632,48 +630,63 @@ class HighlightResult {
   final Emitter _emitter;
   final Mode? _top;
 
-  HighlightResult({
-    required this.code,
-    required this.relevance,
-    this.language,
-    required this.illegal,
-    this.errorRaised,
-    IllegalData? illegalBy,
-    required Emitter emitter,
-    Mode? top
-  }) : _illegalBy = illegalBy,
-    _emitter = emitter,
-    _top = top;
+  HighlightResult(
+      {required this.code,
+      required this.relevance,
+      this.language,
+      required this.illegal,
+      this.errorRaised,
+      IllegalData? illegalBy,
+      required Emitter emitter,
+      Mode? top})
+      : _illegalBy = illegalBy,
+        _emitter = emitter,
+        _top = top;
+
+  /// Create a [HighlightResult] by building a token tree via the [Emitter] API.
+  ///
+  /// The [builder] callback receives an [Emitter] and should call
+  /// [Emitter.addText], [Emitter.startScope], and [Emitter.endScope]
+  /// to construct the token tree. The emitter is finalized automatically.
+  factory HighlightResult.build(
+      String code, void Function(Emitter emitter) builder) {
+    final emitter = _TokenTreeEmitter();
+    builder(emitter);
+    emitter.finalize();
+    return HighlightResult(
+      code: code,
+      relevance: 0,
+      illegal: false,
+      emitter: emitter,
+    );
+  }
 
   void render(HighlightRenderer renderer) {
     (_emitter as _TokenTree).walk(renderer);
   }
 
   String toHtml([String classPrefix = 'hljs-']) {
-    final String value = _HTMLRenderer(_emitter as _TokenTree, classPrefix).value();
+    final String value =
+        _HTMLRenderer(_emitter as _TokenTree, classPrefix).value();
     return value.isEmpty ? _escapeHTML(code) : value;
   }
-
 }
 
 class AutoHighlightResult extends HighlightResult {
-
   HighlightResult? secondBest;
 
   AutoHighlightResult({
     required HighlightResult best,
     this.secondBest,
   }) : super(
-    code: best.code,
-    relevance: best.relevance,
-    language: best.language,
-    illegal: best.illegal,
-    errorRaised: best.errorRaised,
-    illegalBy: best._illegalBy,
-    emitter: best._emitter,
-    top: best._top
-  );
-
+            code: best.code,
+            relevance: best.relevance,
+            language: best.language,
+            illegal: best.illegal,
+            errorRaised: best.errorRaised,
+            illegalBy: best._illegalBy,
+            emitter: best._emitter,
+            top: best._top);
 }
 
 class IllegalData {
@@ -682,12 +695,11 @@ class IllegalData {
   final int index;
   final Mode? mode;
 
-  IllegalData({
-    required this.message,
-    required this.context,
-    required this.index,
-    this.mode
-  });
+  IllegalData(
+      {required this.message,
+      required this.context,
+      required this.index,
+      this.mode});
 }
 
 class AnnotatedError extends Error {
@@ -696,10 +708,5 @@ class AnnotatedError extends Error {
   final String? languageName;
   final Mode? badRule;
 
-  AnnotatedError(this.message, {
-    this.mode,
-    this.languageName,
-    this.badRule
-  });
-
+  AnnotatedError(this.message, {this.mode, this.languageName, this.badRule});
 }

@@ -20,6 +20,9 @@
 # is commented out by default.
 #.vscode/
 
+# Local project docs
+.vscode/PROJECT_STRUCTURE.md
+
 # Flutter/Dart/Pub related
 # Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
 /pubspec.lock

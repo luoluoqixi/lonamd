@@ -26,6 +26,9 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
   @override
   Widget build(BuildContext context) {
     return CodeEditorHelper.createMarkdownEditor(
+      mdConfig: MarkdownEditorConfig(
+        codeTheme: mdHighlightTheme(),
+      ),
       controller: _controller,
       findBuilder: (context, controller, readOnly) =>
           CodeFindPanelView(controller: controller, readOnly: readOnly),
