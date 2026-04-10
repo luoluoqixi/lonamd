@@ -51,6 +51,10 @@ enum CodeShortcutType {
   replace,
   save,
   esc,
+  toggleBold,
+  toggleItalic,
+  toggleStrikethrough,
+  toggleHighlight,
 }
 
 abstract class CodeShortcutsActivatorsBuilder {
@@ -217,6 +221,22 @@ class CodeShortcutEscIntent extends Intent {
   const CodeShortcutEscIntent();
 }
 
+class CodeShortcutToggleBoldIntent extends CodeShortcutEditableIntent {
+  const CodeShortcutToggleBoldIntent();
+}
+
+class CodeShortcutToggleItalicIntent extends CodeShortcutEditableIntent {
+  const CodeShortcutToggleItalicIntent();
+}
+
+class CodeShortcutToggleStrikethroughIntent extends CodeShortcutEditableIntent {
+  const CodeShortcutToggleStrikethroughIntent();
+}
+
+class CodeShortcutToggleHighlightIntent extends CodeShortcutEditableIntent {
+  const CodeShortcutToggleHighlightIntent();
+}
+
 const Map<CodeShortcutType, Intent> kCodeShortcutIntents = {
   CodeShortcutType.selectAll: CodeShortcutSelectAllIntent(),
   CodeShortcutType.cut: CodeShortcutCutIntent(),
@@ -286,6 +306,10 @@ const Map<CodeShortcutType, Intent> kCodeShortcutIntents = {
   CodeShortcutType.replace: CodeShortcutReplaceIntent(),
   CodeShortcutType.save: CodeShortcutSaveIntent(),
   CodeShortcutType.esc: CodeShortcutEscIntent(),
+  CodeShortcutType.toggleBold: CodeShortcutToggleBoldIntent(),
+  CodeShortcutType.toggleItalic: CodeShortcutToggleItalicIntent(),
+  CodeShortcutType.toggleStrikethrough: CodeShortcutToggleStrikethroughIntent(),
+  CodeShortcutType.toggleHighlight: CodeShortcutToggleHighlightIntent(),
 };
 
 const Map<CodeShortcutType, List<ShortcutActivator>>
@@ -439,6 +463,18 @@ const Map<CodeShortcutType, List<ShortcutActivator>>
   ],
   CodeShortcutType.save: [SingleActivator(LogicalKeyboardKey.keyS, meta: true)],
   CodeShortcutType.esc: [SingleActivator(LogicalKeyboardKey.escape)],
+  CodeShortcutType.toggleBold: [
+    SingleActivator(LogicalKeyboardKey.keyB, meta: true)
+  ],
+  CodeShortcutType.toggleItalic: [
+    SingleActivator(LogicalKeyboardKey.keyI, meta: true)
+  ],
+  CodeShortcutType.toggleStrikethrough: [
+    SingleActivator(LogicalKeyboardKey.keyD, meta: true, shift: true)
+  ],
+  CodeShortcutType.toggleHighlight: [
+    SingleActivator(LogicalKeyboardKey.keyH, meta: true, shift: true)
+  ],
 };
 
 const Map<CodeShortcutType, List<ShortcutActivator>>
@@ -598,4 +634,16 @@ const Map<CodeShortcutType, List<ShortcutActivator>>
     SingleActivator(LogicalKeyboardKey.keyS, control: true)
   ],
   CodeShortcutType.esc: [SingleActivator(LogicalKeyboardKey.escape)],
+  CodeShortcutType.toggleBold: [
+    SingleActivator(LogicalKeyboardKey.keyB, control: true)
+  ],
+  CodeShortcutType.toggleItalic: [
+    SingleActivator(LogicalKeyboardKey.keyI, control: true)
+  ],
+  CodeShortcutType.toggleStrikethrough: [
+    SingleActivator(LogicalKeyboardKey.keyD, control: true, shift: true)
+  ],
+  CodeShortcutType.toggleHighlight: [
+    SingleActivator(LogicalKeyboardKey.keyH, control: true, shift: true)
+  ],
 };

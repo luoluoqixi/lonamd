@@ -30,6 +30,7 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
         codeTheme: mdHighlightTheme(),
       ),
       controller: _controller,
+      wysiwygConfig: const MdWysiwygConfig(),
       findBuilder: (context, controller, readOnly) =>
           CodeFindPanelView(controller: controller, readOnly: readOnly),
       toolbarController: const ContextMenuControllerImpl(),

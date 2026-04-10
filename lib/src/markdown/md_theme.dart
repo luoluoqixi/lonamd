@@ -56,6 +56,9 @@ Map<String, TextStyle> defaultMdLightTheme() {
     'meta': const TextStyle(
       color: Color(0xFF8250DF),
     ),
+    'md-mark': const TextStyle(
+      color: Color(0xFF8250DF),
+    ),
     'string': const TextStyle(
       color: Color(0xFF0A3069),
     ),
@@ -107,6 +110,9 @@ Map<String, TextStyle> defaultMdDarkTheme() {
       fontWeight: FontWeight.bold,
     ),
     'meta': const TextStyle(
+      color: Color(0xFFBC8CFF),
+    ),
+    'md-mark': const TextStyle(
       color: Color(0xFFBC8CFF),
     ),
     'string': const TextStyle(

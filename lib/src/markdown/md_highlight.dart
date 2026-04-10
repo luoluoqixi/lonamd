@@ -29,7 +29,7 @@ String? _scopeForType(MdNodeType type) {
     case MdNodeType.blockquote:
       return 'quote';
     case MdNodeType.horizontalRule:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.atxHeading1:
     case MdNodeType.atxHeading2:
     case MdNodeType.atxHeading3:
@@ -76,17 +76,17 @@ String? _scopeForType(MdNodeType type) {
 
     // Mark/token nodes
     case MdNodeType.headerMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.quoteMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.listMark:
       return 'bullet';
     case MdNodeType.linkMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.emphasisMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.codeMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.codeText:
       return 'code';
     case MdNodeType.codeInfo:
@@ -102,7 +102,7 @@ String? _scopeForType(MdNodeType type) {
     case MdNodeType.strikethrough:
       return 'deletion';
     case MdNodeType.strikethroughMark:
-      return 'meta';
+      return 'md-mark';
     case MdNodeType.table:
       return null;
     case MdNodeType.tableHeader:
@@ -120,7 +120,7 @@ String? _scopeForType(MdNodeType type) {
     case MdNodeType.highlight:
       return 'addition';
     case MdNodeType.highlightMark:
-      return 'meta';
+      return 'md-mark';
   }
 }
 

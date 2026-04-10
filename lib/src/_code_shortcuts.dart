@@ -64,6 +64,7 @@ class _CodeShortcutActions extends StatelessWidget {
   final CodeCommentFormatter? commentFormatter;
   final Map<Type, Action<Intent>>? overrideActions;
   final bool readOnly;
+  final MdWysiwygConfig? wysiwygConfig;
   final Widget child;
 
   const _CodeShortcutActions({
@@ -73,6 +74,7 @@ class _CodeShortcutActions extends StatelessWidget {
     this.commentFormatter,
     required this.overrideActions,
     required this.readOnly,
+    this.wysiwygConfig,
     required this.child,
   });
 
@@ -245,6 +247,11 @@ class _CodeShortcutActions extends StatelessWidget {
       actions.inputController.notifyListeners();
     },
     CodeShortcutNewLineIntent: (intent, actions) {
+      if (actions.wysiwygConfig?.autoContinueList == true) {
+        if (handleMarkdownNewLine(actions.editingController)) {
+          return;
+        }
+      }
       actions.editingController.applyNewLine();
     },
     CodeShortcutTransposeCharactersIntent: (intent, actions) {
@@ -268,7 +275,19 @@ class _CodeShortcutActions extends StatelessWidget {
       } else {
         actions.editingController.cancelSelection();
       }
-    }
+    },
+    CodeShortcutToggleBoldIntent: (intent, actions) {
+      toggleInlineFormat(actions.editingController, '**');
+    },
+    CodeShortcutToggleItalicIntent: (intent, actions) {
+      toggleInlineFormat(actions.editingController, '*');
+    },
+    CodeShortcutToggleStrikethroughIntent: (intent, actions) {
+      toggleInlineFormat(actions.editingController, '~~');
+    },
+    CodeShortcutToggleHighlightIntent: (intent, actions) {
+      toggleInlineFormat(actions.editingController, '==');
+    },
   };
 
   Object? _onAction(BuildContext context, Intent intent) {

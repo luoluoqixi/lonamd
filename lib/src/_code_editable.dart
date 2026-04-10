@@ -46,6 +46,7 @@ class _CodeEditable extends StatefulWidget {
   final LayerLink endHandleLayerLink;
   final LayerLink toolbarLayerLink;
   final _SelectionOverlayController selectionOverlayController;
+  final MdWysiwygConfig? wysiwygConfig;
 
   const _CodeEditable({
     required this.editorKey,
@@ -87,6 +88,7 @@ class _CodeEditable extends StatefulWidget {
     required this.endHandleLayerLink,
     required this.toolbarLayerLink,
     required this.selectionOverlayController,
+    this.wysiwygConfig,
   });
 
   @override
@@ -121,6 +123,13 @@ class _CodeEditableState extends State<_CodeEditable>
       controller: widget.controller,
       theme: widget.codeTheme,
     );
+    if (widget.wysiwygConfig != null) {
+      _highlighter.wysiwygState = MdWysiwygState(
+        config: widget.wysiwygConfig!,
+        selection: widget.controller.selection,
+        hasFocus: widget.focusNode.hasFocus,
+      );
+    }
 
     _codeIndicatorValueNotifier = CodeIndicatorValueNotifier(null);
 
@@ -156,6 +165,23 @@ class _CodeEditableState extends State<_CodeEditable>
     }
     if (oldWidget.codeTheme != widget.codeTheme) {
       _highlighter.theme = widget.codeTheme;
+    }
+    if (oldWidget.wysiwygConfig != widget.wysiwygConfig) {
+      if (widget.wysiwygConfig != null) {
+        final existingState = _highlighter.wysiwygState;
+        if (existingState != null) {
+          existingState.config = widget.wysiwygConfig!;
+        } else {
+          _highlighter.wysiwygState = MdWysiwygState(
+            config: widget.wysiwygConfig!,
+            selection: widget.controller.selection,
+            hasFocus: widget.focusNode.hasFocus,
+          );
+        }
+        _highlighter.notifyWysiwygChanged();
+      } else {
+        _highlighter.wysiwygState = null;
+      }
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -311,6 +337,13 @@ class _CodeEditableState extends State<_CodeEditable>
     if (!mounted) {
       return;
     }
+    final wysiwygState = _highlighter.wysiwygState;
+    if (wysiwygState != null) {
+      final needsRefresh = wysiwygState.updateFocus(widget.focusNode.hasFocus);
+      if (needsRefresh) {
+        _highlighter.notifyWysiwygChanged();
+      }
+    }
     _updateCursorState();
     _updateAutoCompleteState(false);
     updateKeepAlive();
@@ -326,6 +359,14 @@ class _CodeEditableState extends State<_CodeEditable>
   void _onCodeInputChanged() {
     if (!mounted) {
       return;
+    }
+    final wysiwygState = _highlighter.wysiwygState;
+    if (wysiwygState != null) {
+      final affected =
+          wysiwygState.updateSelection(widget.controller.selection);
+      if (affected.isNotEmpty) {
+        _highlighter.notifyWysiwygChanged();
+      }
     }
     widget.onChanged?.call(widget.controller.value);
     if (widget.controller.codeLines != widget.controller.preValue?.codeLines &&

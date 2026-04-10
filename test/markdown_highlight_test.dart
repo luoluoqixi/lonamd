@@ -99,10 +99,10 @@ void main() {
       expect(hasScopeContaining(lines, 'section'), isTrue);
     });
 
-    test('heading mark gets meta scope', () {
+    test('heading mark gets md-mark scope', () {
       final lines = highlightMarkdown('# Hello');
-      // The # mark should be meta inside section
-      expect(hasScopeContaining(lines, 'meta'), isTrue);
+      // The # mark should be md-mark inside section
+      expect(hasScopeContaining(lines, 'md-mark'), isTrue);
     });
 
     test('emphasis gets emphasis scope', () {
@@ -140,9 +140,9 @@ void main() {
       expect(hasScopeContaining(lines, 'bullet'), isTrue);
     });
 
-    test('horizontal rule gets meta scope', () {
+    test('horizontal rule gets md-mark scope', () {
       final lines = highlightMarkdown('---');
-      expect(hasScopeContaining(lines, 'meta'), isTrue);
+      expect(hasScopeContaining(lines, 'md-mark'), isTrue);
     });
 
     test('strikethrough gets deletion scope', () {

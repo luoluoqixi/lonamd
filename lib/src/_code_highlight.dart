@@ -8,6 +8,9 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
   CodeLineEditingController _controller;
   CodeHighlightTheme? _theme;
 
+  /// WYSIWYG state for Markdown decoration. Null means no WYSIWYG.
+  MdWysiwygState? _wysiwygState;
+
   _CodeHighlighter({
     required BuildContext context,
     required CodeLineEditingController controller,
@@ -20,6 +23,13 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
         super(const []) {
     _controller.addListener(_onCodesChanged);
     _processHighlight();
+  }
+
+  MdWysiwygState? get wysiwygState => _wysiwygState;
+
+  set wysiwygState(MdWysiwygState? value) {
+    _wysiwygState = value;
+    _provider.clearCache();
   }
 
   set controller(CodeLineEditingController value) {
@@ -79,7 +89,7 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
       return TextSpan(text: text, style: style);
     }
     if (result.source == text) {
-      return _buildSpanFromNodes(result.nodes, style);
+      return _buildSpanFromNodes(result.nodes, style, index);
     }
     // Diff the changes and reuse node to avoid style blink.
     final List<_HighlightNode> startNodes = [];
@@ -118,16 +128,54 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
       midNode = null;
     }
     return _buildSpanFromNodes(
-        [...startNodes, if (midNode != null) midNode, ...endNodes], style);
+        [...startNodes, if (midNode != null) midNode, ...endNodes],
+        style,
+        index);
   }
 
   TextSpan _buildSpanFromNodes(
-      List<_HighlightNode> nodes, TextStyle baseStyle) {
+      List<_HighlightNode> nodes, TextStyle baseStyle, int lineIndex) {
+    final bool hideMarks = _shouldHideMarksOnLine(lineIndex);
     return TextSpan(
         children: nodes
-            .map((e) => TextSpan(text: e.value, style: _findStyle(e.className)))
+            .map((e) => TextSpan(
+                text: e.value,
+                style: hideMarks && _isWysiwygHiddenNode(e.className)
+                    ? _wysiwygState!.config.hiddenStyle
+                    : _findStyle(e.className)))
             .toList(),
         style: baseStyle);
+  }
+
+  /// Whether marks on the given line should be hidden in WYSIWYG mode.
+  bool _shouldHideMarksOnLine(int lineIndex) {
+    final state = _wysiwygState;
+    if (state == null) return false;
+    if (!state.config.isAutoMode) return false;
+    // When unfocused, hide all marks
+    if (!state.hasFocus) return true;
+    // When focused, hide marks on lines NOT covered by the selection
+    final sel = state.selection;
+    return lineIndex < sel.startIndex || lineIndex > sel.endIndex;
+  }
+
+  /// Whether a highlight node should be hidden in WYSIWYG mode.
+  ///
+  /// Checks if the className represents a formatting mark that should
+  /// be hidden when the cursor is elsewhere.
+  static bool _isWysiwygHiddenNode(String? className) {
+    if (className == null) return false;
+    // Mark nodes: 'md-mark' or anything ending in '-md-mark'
+    if (className == 'md-mark' || className.endsWith('-md-mark')) return true;
+    // Link structural parts: URL, title, label (but not display text 'link')
+    if (className.startsWith('link-')) return true;
+    return false;
+  }
+
+  /// Notify the highlighter that WYSIWYG state has changed (cursor/focus).
+  /// Clears paragraph cache for affected lines so TextSpans are rebuilt.
+  void notifyWysiwygChanged() {
+    _provider.clearCache();
   }
 
   TextStyle? _findStyle(String? className) {

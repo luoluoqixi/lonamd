@@ -208,6 +208,7 @@ class CodeEditor extends StatefulWidget {
     this.maxLengthSingleLineRendering,
     this.chunkAnalyzer,
     this.commentFormatter,
+    this.wysiwygConfig,
   }) : assert(indicatorBuilder != null ||
             (indicatorBuilder == null && sperator == null));
 
@@ -330,6 +331,12 @@ class CodeEditor extends StatefulWidget {
 
   /// Control how one or more lines of code are commented.
   final CodeCommentFormatter? commentFormatter;
+
+  /// WYSIWYG configuration for Markdown editing.
+  ///
+  /// When provided, the editor will hide formatting marks based on cursor
+  /// position and focus state, providing a WYSIWYG editing experience.
+  final MdWysiwygConfig? wysiwygConfig;
 
   @override
   State<StatefulWidget> createState() => _CodeEditorState();
@@ -558,6 +565,7 @@ class _CodeEditorState extends State<CodeEditor> {
       endHandleLayerLink: _endHandleLayerLink,
       toolbarLayerLink: _toolbarLayerLink,
       selectionOverlayController: _selectionOverlayController,
+      wysiwygConfig: widget.wysiwygConfig,
     );
     final Widget detector = _CodeSelectionGestureDetector(
         controller: _editingController,
@@ -596,6 +604,7 @@ class _CodeEditorState extends State<CodeEditor> {
             commentFormatter: widget.commentFormatter,
             overrideActions: widget.shortcutOverrideActions,
             readOnly: readOnly,
+            wysiwygConfig: widget.wysiwygConfig,
             child: Focus(
                 autofocus: autofocus,
                 focusNode: _focusNode,

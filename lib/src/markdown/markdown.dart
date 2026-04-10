@@ -7,3 +7,6 @@ export 'md_block_context.dart'
 export 'md_extension.dart' show gfmMarkdownParser;
 export 'md_highlight.dart' show MdHighlightPlugin;
 export 'md_theme.dart';
+export 'md_wysiwyg_config.dart';
+export 'md_wysiwyg_state.dart';
+export 'md_commands.dart';

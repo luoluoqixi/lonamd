@@ -67,6 +67,7 @@ class CodeEditorHelper {
     final int? maxLengthSingleLineRendering,
     final CodeChunkAnalyzer? chunkAnalyzer,
     final CodeCommentFormatter? commentFormatter,
+    final MdWysiwygConfig? wysiwygConfig,
   }) {
     final child = CodeEditor(
       controller: controller,
@@ -98,6 +99,7 @@ class CodeEditorHelper {
       maxLengthSingleLineRendering: maxLengthSingleLineRendering,
       chunkAnalyzer: chunkAnalyzer,
       commentFormatter: commentFormatter,
+      wysiwygConfig: wysiwygConfig,
     );
     if (autocomplete != null) {
       return CodeAutocomplete(
@@ -141,6 +143,7 @@ class CodeEditorHelper {
     final int? maxLengthSingleLineRendering,
     final CodeChunkAnalyzer? chunkAnalyzer,
     final CodeCommentFormatter? commentFormatter,
+    final MdWysiwygConfig? wysiwygConfig,
   }) {
     final markdownStyle = style ??
         CodeEditorStyle(
@@ -177,6 +180,7 @@ class CodeEditorHelper {
       maxLengthSingleLineRendering: maxLengthSingleLineRendering,
       chunkAnalyzer: chunkAnalyzer,
       commentFormatter: commentFormatter,
+      wysiwygConfig: wysiwygConfig ?? const MdWysiwygConfig(),
     );
   }
 }

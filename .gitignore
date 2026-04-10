@@ -30,3 +30,7 @@
 .dart_tool/
 .packages
 build/
+
+openspec/
+.github/prompts/
+.github/skills/
