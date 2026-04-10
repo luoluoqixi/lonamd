@@ -154,6 +154,15 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
   late final _CodeFieldExtraRender _backgroundRender;
   late double _preferredLineHeight;
 
+  /// Per-line height cache. Each entry is `_preferredLineHeight * heightScale`.
+  /// Always has `_codes.length` elements.
+  List<double> _lineHeights = const [];
+
+  /// Prefix sum of `_lineHeights`.
+  /// `_lineHeightPrefixSum[i]` = sum of `_lineHeights[0..i-1]`.
+  /// Always has `_codes.length + 1` elements.
+  List<double> _lineHeightPrefixSum = const [0.0];
+
   _CodeFieldRender({
     required ViewportOffset verticalViewport,
     required ViewportOffset? horizontalViewport,
@@ -205,6 +214,7 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
         _startHandleLayerLink = startHandleLayerLink,
         _endHandleLayerLink = endHandleLayerLink {
     _backgroundRender = _CodeFieldExtraRender(painters: [
+      _MdBlockDecorationPainter(),
       _CodeCursorLinePainter(cursorLineColor, _selection),
       _CodeFieldSelectionPainter(selectionColor, _selection),
       _CodeFieldHighlightPainter(
@@ -227,6 +237,7 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
     ]);
     adoptChild(_foregroundRender);
     _calculatePreferredLineHeight();
+    _rebuildLineHeights();
   }
 
   set verticalViewport(ViewportOffset value) {
@@ -278,6 +289,7 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
       return;
     }
     _codes = value;
+    _rebuildLineHeights();
     markNeedsLayout();
   }
 
@@ -309,6 +321,7 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
     _textStyle = value;
     if (comparison.index >= RenderComparison.layout.index) {
       _calculatePreferredLineHeight();
+      _rebuildLineHeights();
       markNeedsLayout();
     } else {
       markNeedsPaint();
@@ -1048,8 +1061,8 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
       if (target <= paddingTop) {
         startIndex = 0;
       } else {
-        startIndex = min(((target - paddingTop) / _preferredLineHeight).ceil(),
-            _codes.length - 1);
+        startIndex =
+            min(_getLineForOffset(target - paddingTop), _codes.length - 1);
       }
       _displayParagraphs
           .addAll(_buildDisplayRenderParagraphs(startIndex, effectiveWidth));
@@ -1065,7 +1078,10 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
         double offset = _displayParagraphs.first.top;
         for (int i = _displayParagraphs.first.index - 1; i >= 0; i--) {
           final IParagraph paragraph = _buildParagraph(i, effectiveWidth);
-          delta += paragraph.height - _preferredLineHeight;
+          delta += paragraph.height -
+              (i < _lineHeights.length
+                  ? _lineHeights[i]
+                  : _preferredLineHeight);
           offset -= paragraph.height;
           if (target >= offset) {
             startIndex = i;
@@ -1081,7 +1097,8 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
         if (target <= paddingTop) {
           startIndex = 0;
         } else {
-          startIndex = (target / _preferredLineHeight).floor();
+          startIndex =
+              min(_getLineForOffset(target - paddingTop), _codes.length - 1);
         }
         _displayParagraphs.clear();
         _displayParagraphs
@@ -1094,7 +1111,10 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
             startIndex = paragraph.index;
             break;
           }
-          delta += paragraph.paragraph.height - _preferredLineHeight;
+          delta += paragraph.paragraph.height -
+              (paragraph.index < _lineHeights.length
+                  ? _lineHeights[paragraph.index]
+                  : _preferredLineHeight);
         }
         assert(startIndex >= 0);
         _verticalViewport.correctBy(-delta);
@@ -1108,10 +1128,14 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
       _updateDisplayRenderParagraphs();
       return;
     }
-    final double totalHeight = _displayParagraphs.last.bottom +
-        (_codes.length - (_displayParagraphs.last.index + 1)) *
-            _preferredLineHeight +
-        paddingBottom;
+    final int lastDisplayedIndex = _displayParagraphs.last.index;
+    final double remainingHeight =
+        lastDisplayedIndex + 1 < _lineHeightPrefixSum.length
+            ? _lineHeightPrefixSum[_lineHeights.length] -
+                _lineHeightPrefixSum[lastDisplayedIndex + 1]
+            : (_codes.length - (lastDisplayedIndex + 1)) * _preferredLineHeight;
+    final double totalHeight =
+        _displayParagraphs.last.bottom + remainingHeight + paddingBottom;
     _verticalViewportSize = max(0, totalHeight - size.height);
     if (_verticalViewport.pixels > _verticalViewportSize!) {
       _verticalViewport
@@ -1250,6 +1274,52 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
         painter.preferredLineHeight;
   }
 
+  /// Rebuild the per-line height cache and prefix sum from WYSIWYG metadata.
+  void _rebuildLineHeights() {
+    final int count = _codes.length;
+    final heights = List<double>.filled(count, _preferredLineHeight);
+    final state = _highlighter.wysiwygState;
+    if (state != null) {
+      for (final entry in state.lineMetadata.entries) {
+        if (entry.key < count) {
+          heights[entry.key] = _preferredLineHeight * entry.value.heightScale;
+        }
+      }
+    }
+    final prefixSum = List<double>.filled(count + 1, 0.0);
+    for (int i = 0; i < count; i++) {
+      prefixSum[i + 1] = prefixSum[i] + heights[i];
+    }
+    _lineHeights = heights;
+    _lineHeightPrefixSum = prefixSum;
+  }
+
+  /// O(1) offset lookup: vertical offset of the top of line [index]
+  /// (excluding padding).
+  double _getOffsetForLine(int index) {
+    if (index <= 0) return 0.0;
+    if (index >= _lineHeightPrefixSum.length) {
+      return _lineHeightPrefixSum.last;
+    }
+    return _lineHeightPrefixSum[index];
+  }
+
+  /// O(log n) reverse lookup: find the line index at a vertical [offset]
+  /// (excluding padding).
+  int _getLineForOffset(double offset) {
+    if (offset <= 0) return 0;
+    int lo = 0, hi = _lineHeights.length;
+    while (lo < hi) {
+      final int mid = (lo + hi) >> 1;
+      if (_lineHeightPrefixSum[mid + 1] <= offset) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+    return min(lo, _lineHeights.length - 1);
+  }
+
   void _onCursorVisibleChanged() {
     _foregroundRender.find<_CodeFieldCursorPainter>().visible =
         _showCursorNotifier.value;
@@ -1321,8 +1391,8 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
     if (position < paddingTop) {
       _verticalViewport.jumpTo(max(position, 0));
     } else {
-      final double scroll =
-          position ~/ _preferredLineHeight * _preferredLineHeight + paddingTop;
+      final int line = _getLineForOffset(position - paddingTop);
+      final double scroll = _getOffsetForLine(line) + paddingTop;
       if (scroll < _verticalViewport.pixels) {
         _verticalViewport.jumpTo(scroll);
       }
@@ -1338,13 +1408,17 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
     if (position > viewportMax - paddingBottom) {
       _verticalViewport.jumpTo(min(position, viewportMax));
     } else {
-      final double delta =
-          (size.height / _preferredLineHeight).ceil() * _preferredLineHeight -
-              size.height;
-      final double scroll =
-          position ~/ _preferredLineHeight * _preferredLineHeight +
-              delta +
-              paddingTop;
+      // Find the line at the bottom of the viewport and align to its bottom.
+      final double contentOffset =
+          max(0.0, position + size.height - paddingTop);
+      final int bottomLine =
+          min(_getLineForOffset(contentOffset), _codes.length - 1);
+      final double lineHeight = bottomLine < _lineHeights.length
+          ? _lineHeights[bottomLine]
+          : _preferredLineHeight;
+      final double lineBottom =
+          _getOffsetForLine(bottomLine) + lineHeight + paddingTop;
+      final double scroll = lineBottom - size.height;
       if (scroll > _verticalViewport.pixels) {
         _verticalViewport.jumpTo(min(scroll, viewportMax));
       }
@@ -1353,7 +1427,7 @@ class _CodeFieldRender extends RenderBox implements MouseTrackerAnnotation {
 
   List<CodeLineRenderParagraph> _buildDisplayRenderParagraphs(
       int startIndex, double maxWidth) {
-    double offset = startIndex * _preferredLineHeight;
+    double offset = _getOffsetForLine(startIndex);
     final List<CodeLineRenderParagraph> paragraphs = [];
     for (int i = startIndex; i < _codes.length; i++) {
       final IParagraph paragraph = _buildParagraph(i, maxWidth);
@@ -1837,5 +1911,174 @@ class _CodeFieldFloatingCursorPainter extends _CodeFieldExtraPainter {
             _width / 2,
             _width / 2),
         _paint);
+  }
+}
+
+/// Painter for Markdown block-level decorations:
+/// code block backgrounds, HR lines, list bullet / task symbols.
+class _MdBlockDecorationPainter extends _CodeFieldExtraPainter {
+  final Paint _paint = Paint();
+
+  @override
+  void paint(Canvas canvas, Size size, _CodeFieldRender render) {
+    final state = render._highlighter.wysiwygState;
+    if (state == null) return;
+    final config = state.config;
+    if (!config.isAutoMode) return;
+
+    final decorations = state.blockDecorations;
+    if (decorations.isEmpty) return;
+
+    final paragraphs = render.displayParagraphs;
+    if (paragraphs.isEmpty) return;
+
+    final paintOffset = render.paintOffset;
+    final cursorLine = state.selection.extentIndex;
+
+    for (final decoration in decorations) {
+      switch (decoration.type) {
+        case MdBlockDecorationType.codeBlock:
+          if (config.enableCodeBlockBackground) {
+            _paintCodeBlockBackground(
+                canvas, size, paragraphs, paintOffset, decoration, config);
+          }
+          break;
+        case MdBlockDecorationType.horizontalRule:
+          if (config.enableHrLine) {
+            _paintHrLine(canvas, size, paragraphs, paintOffset, decoration,
+                cursorLine, render);
+          }
+          break;
+        case MdBlockDecorationType.listBullet:
+          if (config.enableListBulletReplace) {
+            _paintListBullet(canvas, paragraphs, paintOffset, decoration,
+                cursorLine, render);
+          }
+          break;
+        case MdBlockDecorationType.taskUnchecked:
+        case MdBlockDecorationType.taskChecked:
+          if (config.enableListBulletReplace) {
+            _paintTaskSymbol(canvas, paragraphs, paintOffset, decoration,
+                cursorLine, render);
+          }
+          break;
+      }
+    }
+  }
+
+  void _paintCodeBlockBackground(
+    Canvas canvas,
+    Size size,
+    List<CodeLineRenderParagraph> paragraphs,
+    Offset paintOffset,
+    MdBlockDecoration decoration,
+    MdWysiwygConfig config,
+  ) {
+    double? top;
+    double? bottom;
+    for (final p in paragraphs) {
+      if (p.index >= decoration.startLine && p.index <= decoration.endLine) {
+        final dy = p.offset.dy - paintOffset.dy;
+        top ??= dy;
+        bottom = dy + p.height;
+      }
+    }
+    if (top == null || bottom == null) return;
+
+    final color = config.codeBlockBackgroundColor ?? const Color(0x0F000000);
+    _paint
+      ..color = color
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(
+      RRect.fromRectXY(Rect.fromLTRB(0, top, size.width, bottom), 4.0, 4.0),
+      _paint,
+    );
+  }
+
+  void _paintHrLine(
+    Canvas canvas,
+    Size size,
+    List<CodeLineRenderParagraph> paragraphs,
+    Offset paintOffset,
+    MdBlockDecoration decoration,
+    int cursorLine,
+    _CodeFieldRender render,
+  ) {
+    if (decoration.startLine == cursorLine) return;
+    final p = render.findDisplayParagraphByLineIndex(decoration.startLine);
+    if (p == null) return;
+    final dy = p.offset.dy - paintOffset.dy;
+    final centerY = dy + p.height / 2;
+    _paint
+      ..color = const Color(0x80888888)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(
+      Offset(16.0, centerY),
+      Offset(size.width - 16.0, centerY),
+      _paint,
+    );
+  }
+
+  void _paintListBullet(
+    Canvas canvas,
+    List<CodeLineRenderParagraph> paragraphs,
+    Offset paintOffset,
+    MdBlockDecoration decoration,
+    int cursorLine,
+    _CodeFieldRender render,
+  ) {
+    if (decoration.startLine == cursorLine) return;
+    final col = decoration.markerColumn;
+    if (col == null) return;
+    final p = render.findDisplayParagraphByLineIndex(decoration.startLine);
+    if (p == null) return;
+    final offset = p.getOffset(TextPosition(offset: col));
+    if (offset == null) return;
+    final dy = p.offset.dy - paintOffset.dy + offset.dy;
+    final dx = p.offset.dx - paintOffset.dx + offset.dx;
+    final tp = TextPainter(
+      text: TextSpan(
+        text: '•',
+        style: render._textStyle.copyWith(
+          color: render._textStyle.color ?? const Color(0xFF000000),
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, Offset(dx, dy));
+    tp.dispose();
+  }
+
+  void _paintTaskSymbol(
+    Canvas canvas,
+    List<CodeLineRenderParagraph> paragraphs,
+    Offset paintOffset,
+    MdBlockDecoration decoration,
+    int cursorLine,
+    _CodeFieldRender render,
+  ) {
+    if (decoration.startLine == cursorLine) return;
+    final col = decoration.markerColumn;
+    if (col == null) return;
+    final p = render.findDisplayParagraphByLineIndex(decoration.startLine);
+    if (p == null) return;
+    final offset = p.getOffset(TextPosition(offset: col));
+    if (offset == null) return;
+    final dy = p.offset.dy - paintOffset.dy + offset.dy;
+    final dx = p.offset.dx - paintOffset.dx + offset.dx;
+    final symbol =
+        decoration.type == MdBlockDecorationType.taskChecked ? '☑' : '☐';
+    final tp = TextPainter(
+      text: TextSpan(
+        text: symbol,
+        style: render._textStyle.copyWith(
+          color: render._textStyle.color ?? const Color(0xFF000000),
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, Offset(dx, dy));
+    tp.dispose();
   }
 }

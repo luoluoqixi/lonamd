@@ -208,6 +208,7 @@ class _CodeParagraphProvider {
   ui.ParagraphStyle? _paragraphStyle;
   double? _preferredLineHeight;
   int? _maxLengthSingleLineRendering;
+  TextStyle? _baseTextStyle;
 
   _CodeParagraphProvider() : _cachedParagraphs = {};
 
@@ -216,6 +217,7 @@ class _CodeParagraphProvider {
     if (uiStyle == _style) {
       return;
     }
+    _baseTextStyle = style;
     _paragraphStyle = style.getParagraphStyle(
         textAlign: TextAlign.left,
         textDirection: TextDirection.ltr,
@@ -242,7 +244,7 @@ class _CodeParagraphProvider {
     clearCache();
   }
 
-  IParagraph build(TextSpan span, double maxWidth) {
+  IParagraph build(TextSpan span, double maxWidth, {double heightScale = 1.0}) {
     if (maxWidth != _constraints?.width) {
       _constraints = ui.ParagraphConstraints(width: maxWidth);
       clearCache();
@@ -257,9 +259,10 @@ class _CodeParagraphProvider {
     final int? renderingLength = _maxLengthSingleLineRendering;
     if (renderingLength != null && plainText.length > renderingLength) {
       impl = _build(trucate(span, renderingLength),
-          plainText.substring(0, renderingLength), true);
+          plainText.substring(0, renderingLength), true,
+          heightScale: heightScale);
     } else {
-      impl = _build(span, plainText, false);
+      impl = _build(span, plainText, false, heightScale: heightScale);
     }
     _cachedParagraphs[span] = impl;
     return impl;
@@ -301,10 +304,30 @@ class _CodeParagraphProvider {
     _cachedParagraphs.clear();
   }
 
-  _ParagraphImpl _build(TextSpan span, String plainText, bool trucated) {
-    final ui.ParagraphStyle? style = _paragraphStyle;
-    if (style == null) {
+  _ParagraphImpl _build(TextSpan span, String plainText, bool trucated,
+      {double heightScale = 1.0}) {
+    final ui.ParagraphStyle? baseStyle = _paragraphStyle;
+    if (baseStyle == null) {
       throw AssertionError('Must call updateBaseStyle before build Paragraph.');
+    }
+    final ui.ParagraphStyle style;
+    final double lineHeight;
+    if (heightScale != 1.0 && _baseTextStyle != null) {
+      final double scaledFontSize =
+          (_baseTextStyle!.fontSize ?? 14.0) * heightScale;
+      style = _baseTextStyle!.getParagraphStyle(
+          textAlign: TextAlign.left,
+          textDirection: TextDirection.ltr,
+          strutStyle: StrutStyle(
+            fontSize: scaledFontSize,
+            fontFamily: _baseTextStyle!.fontFamily,
+            height: _baseTextStyle!.height,
+            forceStrutHeight: true,
+          ));
+      lineHeight = _preferredLineHeight! * heightScale;
+    } else {
+      style = baseStyle;
+      lineHeight = _preferredLineHeight!;
     }
     final ui.ParagraphBuilder builder = ui.ParagraphBuilder(style);
     span.build(builder);
@@ -315,7 +338,7 @@ class _CodeParagraphProvider {
       span: span,
       paragraph: paragraph,
       trucated: trucated,
-      preferredLineHeight: _preferredLineHeight!,
+      preferredLineHeight: lineHeight,
     );
   }
 }

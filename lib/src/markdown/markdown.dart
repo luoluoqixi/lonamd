@@ -4,6 +4,7 @@ export 'md_line.dart' hide skipSpaceGlobal, skipSpaceBack;
 export 'md_inline_context.dart' show defaultInlineParsers;
 export 'md_block_context.dart'
     show MdBlockContextImpl, MdMarkdownParserImpl, defaultMarkdownParser;
+export 'md_block_decoration.dart';
 export 'md_extension.dart' show gfmMarkdownParser;
 export 'md_highlight.dart' show MdHighlightPlugin;
 export 'md_theme.dart';

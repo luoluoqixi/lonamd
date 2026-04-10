@@ -12,7 +12,8 @@ import 'md_highlight.dart';
 /// [mdHighlightTheme].
 ///
 /// Scopes used:
-/// - `section` — headings and table headers
+/// - `section` — table headers (generic heading style)
+/// - `section-h1` ~ `section-h6` — headings with fontSize scaling
 /// - `strong` — bold text
 /// - `emphasis` — italic text
 /// - `code` — code blocks, inline code, code content
@@ -25,11 +26,41 @@ import 'md_highlight.dart';
 /// - `comment` — HTML comments
 /// - `deletion` — strikethrough text
 /// - `addition` — highlight text
-Map<String, TextStyle> defaultMdLightTheme() {
+Map<String, TextStyle> defaultMdLightTheme({double baseFontSize = 14.0}) {
   return {
     'section': const TextStyle(
       color: Color(0xFF0550AE),
       fontWeight: FontWeight.bold,
+    ),
+    'section-h1': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.802,
+    ),
+    'section-h2': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.502,
+    ),
+    'section-h3': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.300,
+    ),
+    'section-h4': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.150,
+    ),
+    'section-h5': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize,
+    ),
+    'section-h6': TextStyle(
+      color: const Color(0xFF0550AE),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize,
     ),
     'strong': const TextStyle(
       fontWeight: FontWeight.bold,
@@ -81,11 +112,41 @@ Map<String, TextStyle> defaultMdLightTheme() {
 }
 
 /// Default dark theme for Markdown.
-Map<String, TextStyle> defaultMdDarkTheme() {
+Map<String, TextStyle> defaultMdDarkTheme({double baseFontSize = 14.0}) {
   return {
     'section': const TextStyle(
       color: Color(0xFF79C0FF),
       fontWeight: FontWeight.bold,
+    ),
+    'section-h1': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.802,
+    ),
+    'section-h2': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.502,
+    ),
+    'section-h3': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.300,
+    ),
+    'section-h4': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize * 1.150,
+    ),
+    'section-h5': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize,
+    ),
+    'section-h6': TextStyle(
+      color: const Color(0xFF79C0FF),
+      fontWeight: FontWeight.bold,
+      fontSize: baseFontSize,
     ),
     'strong': const TextStyle(
       fontWeight: FontWeight.bold,
@@ -143,13 +204,16 @@ Map<String, TextStyle> defaultMdDarkTheme() {
 ///
 /// [theme] — scope→style map. Defaults to [defaultMdLightTheme].
 /// [parser] — custom [MdMarkdownParserImpl]. Defaults to [gfmMarkdownParser].
+/// [baseFontSize] — base font size for heading scale calculations.
+///   Only used when [theme] is null (to build the default theme).
 CodeHighlightTheme mdHighlightTheme({
   Map<String, TextStyle>? theme,
   MdMarkdownParserImpl? parser,
+  double baseFontSize = 14.0,
 }) {
   return CodeHighlightTheme(
     languages: {'markdown': langMarkdown.themeMode},
-    theme: theme ?? defaultMdLightTheme(),
+    theme: theme ?? defaultMdLightTheme(baseFontSize: baseFontSize),
     plugins: [MdHighlightPlugin(parser)],
   );
 }

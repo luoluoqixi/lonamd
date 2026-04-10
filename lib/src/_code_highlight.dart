@@ -30,6 +30,7 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
   set wysiwygState(MdWysiwygState? value) {
     _wysiwygState = value;
     _provider.clearCache();
+    _updateMetadata();
   }
 
   set controller(CodeLineEditingController value) {
@@ -59,13 +60,16 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
   }) {
     _provider.updateBaseStyle(style);
     _provider.updateMaxLengthSingleLineRendering(maxLengthSingleLineRendering);
+    final double heightScale =
+        _wysiwygState?.lineMetadata[index]?.heightScale ?? 1.0;
     return _provider.build(
         _controller.buildTextSpan(
             context: _context,
             index: index,
             textSpan: _buildSpan(index, style),
             style: style),
-        maxWidth);
+        maxWidth,
+        heightScale: heightScale);
   }
 
   void clearCache() {
@@ -142,9 +146,31 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
                 text: e.value,
                 style: hideMarks && _isWysiwygHiddenNode(e.className)
                     ? _wysiwygState!.config.hiddenStyle
-                    : _findStyle(e.className)))
+                    : _resolveNodeStyle(e.className, hideMarks)))
             .toList(),
         style: baseStyle);
+  }
+
+  /// Resolve the TextStyle for a highlight node.
+  ///
+  /// When marks are visible on a heading line (cursor on the line),
+  /// heading mark nodes (e.g. `section-h1-md-mark`) get the heading's
+  /// fontSize merged in so the `# ` prefix matches the heading content height.
+  TextStyle? _resolveNodeStyle(String? className, bool hideMarks) {
+    final style = _findStyle(className);
+    if (!hideMarks &&
+        className != null &&
+        className.contains('-md-mark') &&
+        className.startsWith('section-h')) {
+      final headingScope =
+          className.substring(0, className.indexOf('-md-mark'));
+      final headingStyle = _findStyle(headingScope);
+      if (headingStyle?.fontSize != null) {
+        return (style ?? const TextStyle())
+            .copyWith(fontSize: headingStyle!.fontSize);
+      }
+    }
+    return style;
   }
 
   /// Whether marks on the given line should be hidden in WYSIWYG mode.
@@ -169,6 +195,8 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
     if (className == 'md-mark' || className.endsWith('-md-mark')) return true;
     // Link structural parts: URL, title, label (but not display text 'link')
     if (className.startsWith('link-')) return true;
+    // List bullet marks and task markers
+    if (className == 'bullet' || className.endsWith('-bullet')) return true;
     return false;
   }
 
@@ -203,7 +231,21 @@ class _CodeHighlighter extends ValueNotifier<List<_HighlightResult>> {
     if (_controller.preValue?.codeLines == _controller.codeLines) {
       return;
     }
+    _updateMetadata();
     _processHighlight();
+  }
+
+  /// Extract WYSIWYG metadata on the main thread.
+  /// Must run here (not in beforeHighlight) because the highlight
+  /// engine runs in an isolate where state modifications are lost.
+  void _updateMetadata() {
+    final state = _wysiwygState;
+    if (state == null) return;
+    final MdHighlightPlugin? plugin =
+        _theme?.plugins.whereType<MdHighlightPlugin>().firstOrNull;
+    if (plugin == null) return;
+    final code = _controller.codeLines.asString(TextLineBreak.lf, false);
+    plugin.populateMetadata(code, state);
   }
 
   void _processHighlight() {

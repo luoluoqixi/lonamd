@@ -1,5 +1,6 @@
 import 'package:lonamd/lonamd.dart';
 
+import 'md_block_decoration.dart';
 import 'md_wysiwyg_config.dart';
 
 /// Mutable state that the decoration system reads to decide whether
@@ -21,11 +22,23 @@ class MdWysiwygState {
   /// Used to invalidate only the affected lines.
   int _previousLineIndex;
 
+  /// Per-line metadata (heading level, height scale, etc.).
+  /// Populated by MdHighlightPlugin during AST processing.
+  Map<int, MdLineMetadata> lineMetadata;
+
+  /// Block-level decorations (code block ranges, HR lines, list markers).
+  /// Populated by MdHighlightPlugin during AST processing.
+  List<MdBlockDecoration> blockDecorations;
+
   MdWysiwygState({
     this.selection = const CodeLineSelection.zero(),
     this.hasFocus = false,
     this.config = const MdWysiwygConfig(),
-  }) : _previousLineIndex = selection.startIndex;
+    Map<int, MdLineMetadata>? lineMetadata,
+    List<MdBlockDecoration>? blockDecorations,
+  })  : _previousLineIndex = selection.startIndex,
+        lineMetadata = lineMetadata ?? {},
+        blockDecorations = blockDecorations ?? [];
 
   /// Update selection and return the set of line indices that need
   /// their paragraph cache invalidated.

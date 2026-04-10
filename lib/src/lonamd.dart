@@ -16,8 +16,10 @@ import 'package:flutter/services.dart';
 import 'package:lonamd/highlight.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import 'package:lonamd/src/markdown/md_block_decoration.dart';
 import 'package:lonamd/src/markdown/md_wysiwyg_config.dart';
 import 'package:lonamd/src/markdown/md_wysiwyg_state.dart';
+import 'package:lonamd/src/markdown/md_highlight.dart';
 import 'package:lonamd/src/markdown/md_commands.dart';
 
 part '_code_floating_cursor.dart';
